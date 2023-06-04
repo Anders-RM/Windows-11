@@ -1,5 +1,5 @@
 #set up ssh key for github assking for passphrase
-ssh-keygen -t rsa -b 4096 -C "Main Key" -f ~/.ssh/id_rsa -N '' -q   #create ssh key
+ssh-keygen -t rsa -b 4096 -C "Main Key" -f $HOME\.ssh\id_rsa -N '' -q   #create ssh key
 
 #insatlling git and setting up git in windows using winget
 winget install git -e
@@ -16,7 +16,3 @@ Invoke-WebRequest https://www.python.org/ftp/python/3.11.3/python-3.11.3-amd64.e
 
 #running python.py script
 python python.py
-
-#installing pip using python
-python -m pip install --upgrade pip
-

@@ -20,9 +20,9 @@ def add_ssh_key_to_github(username, token, title, key):
         print(f"Response: {response.text}")
 
 # Provide your GitHub username, personal access token, SSH key title, and the actual SSH key content
-username = "your_github_username"
-token = "your_personal_access_token"
-title = "My SSH Key"
-key = "your_ssh_key"
+username = "Anders-RM"
+token = "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"
+title = "Home pc anders@Anders-Win"
+key = "$HOME\.ssh\id_rsa"
 
 add_ssh_key_to_github(username, token, title, key)
