@@ -1,4 +1,4 @@
-Start-Transcript -Path $PSScriptRoot"\MyScript.log" -Append -IncludeInvocationHeader
+Start-Transcript -Path $PSScriptRoot"\powershell.log" -Append -IncludeInvocationHeader
 #set up ssh key for github
 ssh-keygen -t rsa -b 4096 -C "Main Key" -f $HOME\.ssh\id_rsa -N '@Ndersraeder' -q   #create ssh key
 
