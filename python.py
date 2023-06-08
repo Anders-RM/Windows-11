@@ -1,5 +1,6 @@
 import requests
 import os
+import socket
 
 def add_ssh_key_to_github(username, token, title, key):
     """
@@ -14,7 +15,7 @@ def add_ssh_key_to_github(username, token, title, key):
     Returns:
         None
     """
-    url = f"https://api.github.com/user/keys"
+    url = "https://api.github.com/user/keys"
     headers = {
         "Authorization": f"Bearer {token}",
         "Accept": "application/vnd.github.v3+json"
@@ -60,11 +61,19 @@ def disable_quick_find():
     else:
         print("Failed to locate the prefs.js file.")
 
-# Provide your GitHub username, personal access token, SSH key title, and the actual SSH key content
-username = "  "
-token = "  "
-title = "Home pc anders@Anders-Win"
-key = os.path.expanduser('~\.ssh\id_rsa')
+# Provide your GitHub username and personal access token
+username = "your_username"
+token = "your_personal_access_token"
+
+# Get the hostname of the machine
+hostname = socket.gethostname()
+
+# Set the title to include the hostname
+title = f"Home pc anders@{hostname}"
+
+# Read the content of the SSH key file
+with open(os.path.expanduser('~/.ssh/id_rsa.pub'), 'r') as file:
+    key = file.read().strip()
 
 # Call the function to add the SSH key to GitHub
 add_ssh_key_to_github(username, token, title, key)
