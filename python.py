@@ -1,8 +1,19 @@
-#add ssh key to github account using github api
 import requests
 import os
 
 def add_ssh_key_to_github(username, token, title, key):
+    """
+    Adds an SSH key to a GitHub account using the GitHub API.
+
+    Args:
+        username (str): The GitHub username.
+        token (str): The personal access token for the GitHub account.
+        title (str): The title of the SSH key.
+        key (str): The content of the SSH key.
+
+    Returns:
+        None
+    """
     url = f"https://api.github.com/user/keys"
     headers = {
         "Authorization": f"Bearer {token}",
@@ -20,12 +31,43 @@ def add_ssh_key_to_github(username, token, title, key):
         print("Failed to add SSH key.")
         print(f"Response: {response.text}")
 
+def disable_quick_find():
+    """
+    Disables Quick Find in Firefox by modifying the prefs.js file.
+
+    Args:
+        None
+
+    Returns:
+        None
+    """
+    # Find the location of the Firefox profile directory
+    home_dir = os.path.expanduser("~")
+    profile_dir = os.path.join(home_dir, ".mozilla", "firefox")
+    
+    # Locate the prefs.js file within the profile directory
+    for dirpath, dirnames, filenames in os.walk(profile_dir):
+        for filename in filenames:
+            if filename == "prefs.js":
+                prefs_file = os.path.join(dirpath, filename)
+                break
+    
+    # Disable Quick Find in the prefs.js file
+    if prefs_file:
+        with open(prefs_file, "a") as file:
+            file.write("user_pref('accessibility.typeaheadfind', false);\n")
+        print("Quick Find disabled successfully.")
+    else:
+        print("Failed to locate the prefs.js file.")
+
 # Provide your GitHub username, personal access token, SSH key title, and the actual SSH key content
-# file deepcode ignore NoHardcodedCredentials: <The repository is private an is staying private>
-username = "Anders-RM"
-# file deepcode ignore HardcodedNonCryptoSecret: <The repository is private an is staying private>
-token = "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"
+username = "  "
+token = "  "
 title = "Home pc anders@Anders-Win"
 key = os.path.expanduser('~\.ssh\id_rsa')
 
+# Call the function to add the SSH key to GitHub
 add_ssh_key_to_github(username, token, title, key)
+
+# Call the function to disable Quick Find
+disable_quick_find()
