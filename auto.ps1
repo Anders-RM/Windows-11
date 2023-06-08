@@ -23,9 +23,14 @@ Invoke-WebRequest "https://c2rsetup.officeapps.live.com/c2r/download.aspx?Produc
 #run Microsoft Activation Scripts as admin 
 Start-Process powershell -Verb runAs -ArgumentList 'irm https://massgrave.dev/get | iex'
 
+#install hyper-v
+Enable-WindowsOptionalFeature -Online -FeatureName Microsoft-Hyper-V -All -NoRestart
+
 #installing requests module
 python -m pip install requests  
 
 #running python.py script
 python python.py
 
+#ristarting computer
+Restart-Computer -Force
