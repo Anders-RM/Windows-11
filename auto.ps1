@@ -5,8 +5,8 @@ ssh-keygen -t rsa -b 4096 -C "Main Key" -f $HOME\.ssh\id_rsa -N '@Ndersraeder' -
 #insatlling git and setting up git in windows using winget
 winget install Git.Git -e
 
-Start-Process powershell.exe -ArgumentList "-Command", "git config --global user.name 'Anders-RM'"
-Start-Process powershell.exe -ArgumentList "-Command", "git config --global user.email 'Anders_RMathiesen@pm.me'"
+Start-Process powershell.exe -ArgumentList "-Command", "git config --global user.name 'Anders-RM'" -Wait
+Start-Process powershell.exe -ArgumentList "-Command", "git config --global user.email 'Anders_RMathiesen@pm.me'" -Wait
 
 #installing vscode using winget
 winget install Microsoft.VisualStudioCode -e
