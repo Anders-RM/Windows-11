@@ -49,10 +49,10 @@ Set-ItemProperty -Path "HKCU:\SOFTWARE\Microsoft\Windows\CurrentVersion\Explorer
 Set-PSReadlineOption -HistorySaveStyle SaveIncrementally
 
 #installing requests module
-python -m pip install requests  
+Start-Process powershell.exe -ArgumentList "-Command", "python -m pip install requests" -Wait
 
 #running python.py script
-python python.py
+Start-Process powershell.exe -ArgumentList "-Command", "python python.py" -Wait
 
 #ristarting computer
 #Restart-Computer -Force
