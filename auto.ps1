@@ -3,14 +3,14 @@ Start-Transcript -Path $PSScriptRoot"\powershell.log" -Append -IncludeInvocation
 ssh-keygen -t rsa -b 4096 -C "Main Key" -f $HOME\.ssh\id_rsa -N '@Ndersraeder' -q   #create ssh key
 
 # Insatlling git and setting up git in windows using winget
-winget install Git.Git -e
+winget install Git.Git -e --accept-package-agreements --accept-source-agreements
 
 Start-Process powershell.exe -ArgumentList "-Command", "git config --global user.name 'Anders-RM'" -Wait
 Start-Process powershell.exe -ArgumentList "-Command", "git config --global user.email 'Anders_RMathiesen@pm.me'" -Wait
 
 # Installing vscode using winget
-winget install Microsoft.VisualStudioCode -e
-winget install Microsoft.VisualStudioCode.Insiders  -e
+winget install Microsoft.VisualStudioCode -e --accept-package-agreements --accept-source-agreements
+winget install Microsoft.VisualStudioCode.Insiders  -e --accept-package-agreements --accept-source-agreements
 
 # Installing python version 3.11.3 downloading from python.org
 Invoke-WebRequest https://www.python.org/ftp/python/3.11.3/python-3.11.3-amd64.exe -OutFile $PSScriptRoot\python.exe
