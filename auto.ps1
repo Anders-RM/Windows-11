@@ -48,7 +48,7 @@ Set-PSReadlineOption -HistorySaveStyle SaveIncrementally
 Start-Process powershell.exe -ArgumentList "-Command", "python -m pip install requests" -Wait
 
 # Running python.py script
-Start-Process powershell.exe -ArgumentList "-Command", "python python.py" -Wait
+Start-Process powershell.exe -ArgumentList "-Command", "python $PSScriptRoot\python.py" -Wait
 
 # Removing installers
 Remove-Item $PSScriptRoot\office.exe
