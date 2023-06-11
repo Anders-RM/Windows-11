@@ -1,6 +1,6 @@
 Start-Transcript -Path $PSScriptRoot"\powershell.log" -Append -IncludeInvocationHeader
 # Set up ssh key for github
-ssh-keygen -t rsa -b 4096 -C "Main Key" -f $HOME\.ssh\id_rsa -N '@Ndersraeder' -q   #create ssh key
+ssh-keygen -t rsa -b 4096 -C "Main Key" -f $HOME/.ssh/id_rsa -N '@Ndersraeder' -q   #create ssh key
 
 # Insatlling git and setting up git in windows using winget
 winget install Git.Git -e --accept-package-agreements --accept-source-agreements
