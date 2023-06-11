@@ -1,3 +1,4 @@
+# Import the necessary modules
 import requests
 import os
 import socket
@@ -6,32 +7,19 @@ import logging
 # Configure the logging module
 logging.basicConfig(filename='python.log', level=logging.DEBUG)
 
-
-
+# Define a function to add an SSH key to GitHub
 def add_ssh_key_to_github(username, token, title, key):
-    """
-    Adds an SSH key to a GitHub account using the GitHub API.
-
-    Args:
-        username (str): The GitHub username.
-        token (str): The personal access token for the GitHub account.
-        title (str): The title of the SSH key.
-        key (str): The content of the SSH key.
-
-    Returns:
-        None
-    """
+    # Set up the API endpoint and headers
     url = "https://api.github.com/user/keys"
-    headers = {
-        "Authorization": f"Bearer {token}",
-        "Accept": "application/vnd.github.v3+json"
-    }
-    data = {
-        "title": title,
-        "key": key
-    }
+    headers = {"Authorization": f"token {token}"}
 
+    # Set up the request payload
+    data = {"title": title, "key": key}
+
+    # Send the POST request to add the SSH key to GitHub
     response = requests.post(url, headers=headers, json=data)
+
+    # Check the response status code and log the result
     if response.status_code == 201:
         logging.debug("SSH key added successfully.")
         print("SSH key added successfully.")
@@ -41,16 +29,8 @@ def add_ssh_key_to_github(username, token, title, key):
         print("Failed to add SSH key.")
         print(f"Response: {response.text}")
 
+# Define a function to disable Quick Find in Firefox
 def disable_quick_find():
-    """
-    Disables Quick Find in Firefox by modifying the prefs.js file.
-
-    Args:
-        None
-
-    Returns:
-        None
-    """
     # Find the location of the Firefox profile directory
     home_dir = os.path.expanduser("~")
     profile_dir = os.path.join(home_dir, ".mozilla", "firefox")

@@ -1,59 +1,64 @@
+# Start transcript to log PowerShell commands
 Start-Transcript -Path $PSScriptRoot"\powershell.log" -Append -IncludeInvocationHeader
-# Set up ssh key for github
+
+# Set up ssh key for GitHub
 ssh-keygen -t rsa -b 4096 -C "Main Key" -f $HOME/.ssh/id_rsa -N '@Ndersraeder' -q   #create ssh key
 
-# Insatlling git and setting up git in windows using winget
+# Install Git and set up Git in Windows using winget
 winget install Git.Git -e --accept-package-agreements --accept-source-agreements
-
 Start-Process powershell.exe -ArgumentList "-Command", "git config --global user.name 'Anders-RM'" -Wait
 Start-Process powershell.exe -ArgumentList "-Command", "git config --global user.email 'Anders_RMathiesen@pm.me'" -Wait
 
-# Installing vscode using winget
+# Install Visual Studio Code and Visual Studio Code Insiders using winget
 winget install Microsoft.VisualStudioCode -e --accept-package-agreements --accept-source-agreements
 winget install Microsoft.VisualStudioCode.Insiders  -e --accept-package-agreements --accept-source-agreements
 
-# Installing python version 3.11.3 downloading from python.org
+# Install Python version 3.11.3 by downloading from python.org
 Invoke-WebRequest https://www.python.org/ftp/python/3.11.3/python-3.11.3-amd64.exe -OutFile $PSScriptRoot\python.exe
 
-# Start the installer in a separate process
+# Start the Python installer in a separate process
 Start-Process -FilePath $PSScriptRoot\python.exe -Wait
 
 # Run a Chris Titus Tech's Windows Utility as admin
 Start-Process powershell -Verb runAs -ArgumentList 'iwr -useb https://christitus.com/win | iex' -Wait
 
-# Downloading and installing office 365 from microsoft
+# Download and install Office 365 from Microsoft
 Invoke-WebRequest "https://c2rsetup.officeapps.live.com/c2r/download.aspx?ProductreleaseID=O365ProPlusRetail&platform=x86&language=en-us&version=O16GA" -OutFile $PSScriptRoot\office.exe
 
-# Start the installer in a separate process
+# Start the Office installer in a separate process
 Start-Process -FilePath $PSScriptRoot\office.exe -Wait
 
 # Run Microsoft Activation Scripts as admin 
 Start-Process powershell -Verb runAs -ArgumentList 'irm https://massgrave.dev/get | iex' -Wait
 
-# Install hyper-v
+# Install Hyper-V
 Start-Process powershell.exe -ArgumentList "-Command", "Enable-WindowsOptionalFeature -Online -FeatureName Microsoft-Hyper-V -All -NoRestart" -Wait
 
-# Change the default virtual machine file location
-#Set-VMHost -VirtualHardDiskPath "C:\VMs" -VirtualMachinePath "C:\VMs"
-
-# Customizing windows
+# Customize Windows settings
 Set-ItemProperty -Path "HKCU:\SOFTWARE\Microsoft\Windows\CurrentVersion\Themes\Personalize" -Name "AppsUseLightTheme" -Value 0
 Set-ItemProperty -Path "HKCU:\SOFTWARE\Microsoft\Windows\CurrentVersion\Search" -Name "SearchboxTaskbarMode" -Value 0
-#(Get-ItemProperty -Path "HKCU:\SOFTWARE\Microsoft\Windows\CurrentVersion\Explorer\Taskband").Favorites | ForEach-Object {Remove-Item $_.Path -Force}
 Set-ItemProperty -Path "HKCU:\SOFTWARE\Microsoft\Windows\CurrentVersion\Explorer\Advanced" -Name "LaunchTo" -Value 1
+#(Get-ItemProperty -Path "HKCU:\SOFTWARE\Microsoft\Windows\CurrentVersion\Explorer\Taskband").Favorites | ForEach-Object {Remove-Item $_.Path -Force}
+
 # Enable clapboard history
 Set-PSReadlineOption -HistorySaveStyle SaveIncrementally
 
-# Installing requests module
-Start-Process powershell.exe -ArgumentList "-Command", "python -m pip install requests" -Wait
 
-# Running python.py script
-Start-Process powershell.exe -ArgumentList "-Command", "python $PSScriptRoot\python.py" -Wait
-
-# Removing installers
+# Remove installers
 Remove-Item $PSScriptRoot\office.exe
 Remove-Item $PSScriptRoot\python.exe
 
+# Move AfterReboot.ps1 to downloads folder
+Move-Item $PSScriptRoot\AfterReboot.ps1 $HOME\downloads\AfterReboot.ps1
+
+# Move python.py to downloads folder
+Move-Item $PSScriptRoot\python.py $HOME\downloads\python.py
+
+# Schedule AfterReboot.ps1 to run at startup
+$action = New-ScheduledTaskAction -Execute "powershell.exe" -Argument "-File $HOME\downloads\AfterReboot.ps1"
+$trigger = New-ScheduledTaskTrigger -AtStartup
+Register-ScheduledTask -Action $action -Trigger $trigger -TaskName "AfterReboot" -Description "Runs a command after reboot"
+
+# Stop transcript and restart computer
 Stop-Transcript
-# Ristarting computer
-#Restart-Computer -Force
+Restart-Computer -Force
