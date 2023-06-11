@@ -83,7 +83,7 @@ hostname = socket.gethostname()
 title = f"Home pc anders@{hostname}"
 
 # Read the content of the SSH key file
-with open(os.path.expanduser('~/.ssh/id_rsa.pub'), 'r') as file:
+with open(os.path.expanduser('~\.ssh\id_rsa.pub'), 'r') as file:
     key = file.read().strip()
 
 # Call the function to add the SSH key to GitHub
