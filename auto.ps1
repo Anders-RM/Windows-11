@@ -33,7 +33,6 @@ Start-Process powershell -Verb runAs -ArgumentList 'irm https://massgrave.dev/ge
 # Install hyper-v
 Start-Process powershell.exe -ArgumentList "-Command", "Enable-WindowsOptionalFeature -Online -FeatureName Microsoft-Hyper-V -All -NoRestart" -Wait
 
-
 # Change the default virtual machine file location
 #Set-VMHost -VirtualHardDiskPath "C:\VMs" -VirtualMachinePath "C:\VMs"
 
@@ -50,6 +49,10 @@ Start-Process powershell.exe -ArgumentList "-Command", "python -m pip install re
 
 # Running python.py script
 Start-Process powershell.exe -ArgumentList "-Command", "python python.py" -Wait
+
+# Removing installers
+Remove-Item $PSScriptRoot\office.exe
+Remove-Item $PSScriptRoot\python.exe
 
 Stop-Transcript
 # Ristarting computer
