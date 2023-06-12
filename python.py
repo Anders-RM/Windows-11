@@ -3,6 +3,7 @@ import requests
 import os
 import socket
 import logging
+import getpass
 
 # Configure the logging module
 logging.basicConfig(filename='python.log', level=logging.DEBUG)
@@ -54,7 +55,9 @@ def disable_quick_find():
 
 # Provide your GitHub username and personal access token
 username = input("Enter your GitHub username: ")
-token = input("Enter your GitHub token: ")
+
+token = getpass.getpass(prompt='Enter your password: ')
+#token = input("Enter your GitHub token: ") #add hide input
 
 # Get the hostname of the machine
 hostname = socket.gethostname()

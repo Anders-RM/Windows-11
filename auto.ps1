@@ -2,7 +2,9 @@
 Start-Transcript -Path $PSScriptRoot"\powershell.log" -Append -IncludeInvocationHeader
 
 # Set up ssh key for GitHub
-$SSHPassword = Read-Host -Prompt "Enter password for SSH key"
+#$SSHPassword = Read-Host -Prompt "Enter password for SSH key" #add hide input
+$Password = Read-Host -Prompt "Enter password for SSH key" -AsSecureString
+$SSHPassword = [System.Runtime.InteropServices.Marshal]::PtrToStringAuto([System.Runtime.InteropServices.Marshal]::SecureStringToBSTR($Password))
 ssh-keygen -t rsa -b 4096 -C "Main Key" -f $HOME/.ssh/id_rsa -N $SSHPassword -q   #create ssh key 
 
 # Install Git and set up Git in Windows using winget
@@ -14,8 +16,8 @@ Start-Process powershell.exe -ArgumentList "-Command", "git config --global user
 winget install Microsoft.VisualStudioCode -e --accept-package-agreements --accept-source-agreements
 winget install Microsoft.VisualStudioCode.Insiders  -e --accept-package-agreements --accept-source-agreements
 
-# Install Python version 3.11.3 by downloading from python.org
-Invoke-WebRequest https://www.python.org/ftp/python/3.11.3/python-3.11.3-amd64.exe -OutFile $PSScriptRoot\python.exe
+# Install Python version 3.11.4 by downloading from python.org
+Invoke-WebRequest https://www.python.org/ftp/python/3.11.4/python-3.11.4-amd64.exe -OutFile $PSScriptRoot\python.exe
 
 # Start the Python installer in a separate process
 Start-Process -FilePath $PSScriptRoot\python.exe -Wait
@@ -45,10 +47,10 @@ Set-ItemProperty -Path "HKCU:\SOFTWARE\Microsoft\Windows\CurrentVersion\Explorer
 Set-PSReadlineOption -HistorySaveStyle SaveIncrementally
 
 # Install requests module
-py -m pip install requests
+start-Process powershell.exe -ArgumentList "-Command", "py -m pip install requests" -Wait
 
 # Run python.py script
-py $PSScriptRoo\python.py
+start-Process powershell.exe -ArgumentList "-Command", "py $PSScriptRoo\python.py" -Wait
 
 # Remove installers
 Remove-Item $PSScriptRoot\office.exe
@@ -57,12 +59,9 @@ Remove-Item $PSScriptRoot\python.exe
 # Move AfterReboot.ps1 to downloads folder
 Move-Item $PSScriptRoot\AfterReboot.ps1 $HOME\downloads\AfterReboot.ps1
 
-# Move python.py to downloads folder
-#Move-Item $PSScriptRoot\python.py $HOME\downloads\python.py
-
 # Schedule AfterReboot.ps1 to run at startup
 $action = New-ScheduledTaskAction -Execute "powershell.exe" -Argument "-File $HOME\downloads\AfterReboot.ps1"
-$trigger = New-ScheduledTaskTrigger -AtStartup
+$trigger = New-ScheduledTaskTrigger -AtLogOn
 Register-ScheduledTask -Action $action -Trigger $trigger -TaskName "AfterReboot" -Description "Runs a command after reboot"
 
 # Stop transcript and restart computer
