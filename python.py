@@ -53,8 +53,8 @@ def disable_quick_find():
         print("Failed to locate the prefs.js file.")
 
 # Provide your GitHub username and personal access token
-username = ""
-token = ""
+username = input("Enter your GitHub username: ")
+token = input("Enter your GitHub token: ")
 
 # Get the hostname of the machine
 hostname = socket.gethostname()
