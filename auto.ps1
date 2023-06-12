@@ -44,6 +44,11 @@ Set-ItemProperty -Path "HKCU:\SOFTWARE\Microsoft\Windows\CurrentVersion\Explorer
 # Enable clapboard history
 Set-PSReadlineOption -HistorySaveStyle SaveIncrementally
 
+# Install requests module
+py -m pip install requests
+
+# Run python.py script
+py $PSScriptRoo\python.py
 
 # Remove installers
 Remove-Item $PSScriptRoot\office.exe
@@ -53,7 +58,7 @@ Remove-Item $PSScriptRoot\python.exe
 Move-Item $PSScriptRoot\AfterReboot.ps1 $HOME\downloads\AfterReboot.ps1
 
 # Move python.py to downloads folder
-Move-Item $PSScriptRoot\python.py $HOME\downloads\python.py
+#Move-Item $PSScriptRoot\python.py $HOME\downloads\python.py
 
 # Schedule AfterReboot.ps1 to run at startup
 $action = New-ScheduledTaskAction -Execute "powershell.exe" -Argument "-File $HOME\downloads\AfterReboot.ps1"
