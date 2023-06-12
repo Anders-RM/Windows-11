@@ -56,7 +56,7 @@ def disable_quick_find():
 # Provide your GitHub username and personal access token
 username = input("Enter your GitHub username: ")
 
-token = getpass.getpass(prompt='Enter your password: ')
+token = getpass.getpass(prompt='Enter your GitHub token: ')
 #token = input("Enter your GitHub token: ") #add hide input
 
 # Get the hostname of the machine
