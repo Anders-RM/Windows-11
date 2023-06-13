@@ -67,9 +67,6 @@ def disable_quick_find():
     logging.debug("Quick Find disabled successfully.")
     print("Quick Find disabled successfully.")
 
-# Call the function to disable Quick Find
-disable_quick_find()
-
 # Provide your GitHub username and personal access token
 username = input("Enter your GitHub username: ")
 
