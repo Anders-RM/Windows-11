@@ -74,3 +74,5 @@ add_ssh_key_to_github(username, token, title, key)
 
 # Call the function to disable Quick Find
 disable_quick_find()
+
+input("Press Enter to exit python")

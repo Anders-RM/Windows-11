@@ -51,7 +51,7 @@ py -m pip install requests
 #start-Process powershell.exe -ArgumentList "-Command", "py -m pip install requests" -Wait
 
 # Run python.py script
-py $PSScriptRoo\python.py
+py $PSScriptRoot\python.py
 #start-Process powershell.exe -ArgumentList "-Command", "py $PSScriptRoo\python.py" -Wait
 
 # Remove installers
