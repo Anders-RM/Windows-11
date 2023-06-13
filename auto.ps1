@@ -51,6 +51,15 @@ Set-PSReadlineOption -HistorySaveStyle SaveIncrementally
 # Run a Chris Titus Tech's Windows Utility as admin
 Start-Process powershell -Verb runAs -ArgumentList 'iwr -useb https://christitus.com/win | iex' -Wait
 
+# Start Firefox
+Start-Process firefox
+
+# Wait for 2 seconds
+Start-Sleep -Seconds 2
+
+# Close Firefox
+Get-Process firefox | Stop-Process
+
 # Install python module
 py -m pip install -U requests
 py -m pip install -U selenium

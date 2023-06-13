@@ -81,14 +81,5 @@ with open(os.path.expanduser('~/.ssh/id_rsa.pub'), 'r') as file:
 # Call the function to add the SSH key to GitHub
 add_ssh_key_to_github(username, token, title, key)
 
-# Start Firefox
-driver = webdriver.Firefox()
-driver.get("https://www.google.com")
-
-time.sleep(2)
-
-# Close Firefox
-driver.quit()
-
 # Call the function to disable Quick Find
 disable_quick_find()
