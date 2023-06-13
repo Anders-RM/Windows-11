@@ -69,14 +69,9 @@ def disable_quick_find():
 
 # Provide your GitHub username and personal access token
 username = input("Enter your GitHub username: ")
-
 token = getpass.getpass(prompt='Enter your GitHub token: ')
-#token = input("Enter your GitHub token: ") #add hide input
 
-# Get the hostname of the machine
 hostname = socket.gethostname()
-
-# Set the title to include the hostname
 title = f"Home pc anders@{hostname}"
 
 # Read the content of the SSH key file
@@ -90,7 +85,6 @@ add_ssh_key_to_github(username, token, title, key)
 driver = webdriver.Firefox()
 driver.get("https://www.google.com")
 
-# Wait for 10 seconds
 time.sleep(2)
 
 # Close Firefox
