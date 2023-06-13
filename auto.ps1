@@ -13,7 +13,7 @@ Start-Process powershell.exe -ArgumentList "-Command", "git config --global user
 Start-Process powershell.exe -ArgumentList "-Command", "git config --global user.email 'Anders_RMathiesen@pm.me'" -Wait
 
 # Install Visual Studio Code and Visual Studio Code Insiders using winget
-winget install Microsoft.VisualStudioCode -e --accept-package-agreements --accept-source-agreements
+#winget install Microsoft.VisualStudioCode -e --accept-package-agreements --accept-source-agreements
 winget install Microsoft.VisualStudioCode.Insiders  -e --accept-package-agreements --accept-source-agreements
 
 # Install Python version 3.11.4 by downloading from python.org
