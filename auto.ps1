@@ -21,9 +21,6 @@ Invoke-WebRequest https://www.python.org/ftp/python/3.11.4/python-3.11.4-amd64.e
 # Start the Python installer in a separate process
 Start-Process -FilePath $PSScriptRoot\python.exe -Wait
 
-# Run a Chris Titus Tech's Windows Utility as admin
-Start-Process powershell -Verb runAs -ArgumentList 'iwr -useb https://christitus.com/win | iex' -Wait
-
 # Download and install Office 365 from Microsoft
 Invoke-WebRequest "https://c2rsetup.officeapps.live.com/c2r/download.aspx?ProductreleaseID=O365ProPlusRetail&platform=x86&language=en-us&version=O16GA" -OutFile $PSScriptRoot\office.exe
 
@@ -46,11 +43,13 @@ Set-ItemProperty -Path "HKCU:\SOFTWARE\Microsoft\Windows\CurrentVersion\Explorer
 Set-ItemProperty -Path "HKCU:\SOFTWARE\Microsoft\Windows\CurrentVersion\Explorer\Advanced" -Name "TaskbarDa" -Value 0
 Set-ItemProperty -Path "HKCU:\SOFTWARE\Microsoft\Windows\CurrentVersion\Explorer\Advanced" -Name "TaskbarMn" -Value 0
 
-
 #(Get-ItemProperty -Path "HKCU:\SOFTWARE\Microsoft\Windows\CurrentVersion\Explorer\Taskband").Favorites | ForEach-Object {Remove-Item $_.Path -Force}
 
 # Enable clapboard history
 Set-PSReadlineOption -HistorySaveStyle SaveIncrementally
+
+# Run a Chris Titus Tech's Windows Utility as admin
+Start-Process powershell -Verb runAs -ArgumentList 'iwr -useb https://christitus.com/win | iex' -Wait
 
 # Install python module
 py -m pip install -U requests
