@@ -73,7 +73,6 @@ token = getpass.getpass(prompt='Enter your GitHub token: ')
 
 hostname = socket.gethostname()
 title = f"Home pc anders@{hostname}"
-
 # Read the content of the SSH key file
 with open(os.path.expanduser('~/.ssh/id_rsa.pub'), 'r') as file:
     key = file.read().strip()
