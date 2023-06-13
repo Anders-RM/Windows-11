@@ -81,5 +81,3 @@ Register-ScheduledTask -Action $action -Trigger $trigger -TaskName "AfterReboot"
 # Stop transcript and restart computer
 Stop-Transcript
 #Restart-Computer -Force
-
--NoExit -ExecutionPolicy Bypass
