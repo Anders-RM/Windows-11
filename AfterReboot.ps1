@@ -1,4 +1,4 @@
-Start-Transcript -Path $HOME\downloads"\powershell.log" -Append -IncludeInvocationHeader
+Start-Transcript -Path "$HOME\downloads\powershell.log" -Append -IncludeInvocationHeader
 # Set the virtual hard disk and virtual machine paths for the VM host
 Set-VMHost -VirtualHardDiskPath "C:\VMs" -VirtualMachinePath "C:\VMs"
 
