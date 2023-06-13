@@ -6,6 +6,8 @@ import logging
 import getpass
 from selenium import webdriver
 import time
+import sys
+
 
 # Configure the logging module
 logging.basicConfig(filename='python.log', level=logging.DEBUG)
@@ -32,12 +34,20 @@ def add_ssh_key_to_github(username, token, title, key):
         print("Failed to add SSH key.")
         print(f"Response: {response.text}")
 
-# Define a function to disable Quick Find in Firefox
 
 def disable_quick_find():
     # Find the location of the Firefox profile directory
-    home_dir = os.path.expanduser("~")
-    profile_dir = os.path.join(home_dir, ".mozilla", "firefox")
+    if sys.platform.startswith('win'):
+        app_data = os.getenv('APPDATA')
+        profile_dir = os.path.join(app_data, 'Mozilla', 'Firefox', 'Profiles')
+    elif sys.platform.startswith('linux'):
+        home_dir = os.path.expanduser("~")
+        profile_dir = os.path.join(home_dir, ".mozilla", "firefox")
+    elif sys.platform.startswith('darwin'):
+        home_dir = os.path.expanduser("~")
+        profile_dir = os.path.join(home_dir, "Library", "Application Support", "Firefox", "Profiles")
+    else:
+        raise Exception("Unsupported operating system.")
     
     # Locate the prefs.js file within the profile directory
     prefs_file = None
@@ -46,7 +56,7 @@ def disable_quick_find():
             if filename == "prefs.js":
                 prefs_file = os.path.join(dirpath, filename)
                 break
-    
+            
     # Check if the prefs.js file was found
     if prefs_file is None:
         raise Exception("Failed to locate the prefs.js file.")
@@ -56,6 +66,9 @@ def disable_quick_find():
         file.write("user_pref('accessibility.typeaheadfind', false);\n")
     logging.debug("Quick Find disabled successfully.")
     print("Quick Find disabled successfully.")
+
+# Call the function to disable Quick Find
+disable_quick_find()
 
 # Provide your GitHub username and personal access token
 username = input("Enter your GitHub username: ")
@@ -81,7 +94,7 @@ driver = webdriver.Firefox()
 driver.get("https://www.google.com")
 
 # Wait for 10 seconds
-time.sleep(10)
+time.sleep(2)
 
 # Close Firefox
 driver.quit()
