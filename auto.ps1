@@ -74,7 +74,7 @@ Remove-Item $PSScriptRoot\python.exe
 Move-Item $PSScriptRoot\AfterReboot.ps1 $HOME\downloads\AfterReboot.ps1
 
 # Schedule AfterReboot.ps1 to run at startup
-$action = New-ScheduledTaskAction -Execute "powershell.exe" -Argument "-File -noexit $HOME\downloads\AfterReboot.ps1"
+$action = New-ScheduledTaskAction -Execute "powershell.exe" #-Argument "-File -noexit $HOME\downloads\AfterReboot.ps1"
 $trigger = New-ScheduledTaskTrigger -AtLogOn
 Register-ScheduledTask -Action $action -Trigger $trigger -TaskName "AfterReboot" -Description "Runs a command after reboot"
 
