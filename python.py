@@ -4,6 +4,8 @@ import os
 import socket
 import logging
 import getpass
+from selenium import webdriver
+import time
 
 # Configure the logging module
 logging.basicConfig(filename='python.log', level=logging.DEBUG)
@@ -74,5 +76,15 @@ with open(os.path.expanduser('~/.ssh/id_rsa.pub'), 'r') as file:
 # Call the function to add the SSH key to GitHub
 add_ssh_key_to_github(username, token, title, key)
 
+# Start Firefox
+driver = webdriver.Firefox()
+driver.get("https://www.google.com")
+
+# Wait for 10 seconds
+time.sleep(10)
+
+# Close Firefox
+driver.quit()
+
 # Call the function to disable Quick Find
-#disable_quick_find()
+disable_quick_find()

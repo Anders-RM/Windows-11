@@ -50,13 +50,11 @@ Set-ItemProperty -Path "HKCU:\SOFTWARE\Microsoft\Windows\CurrentVersion\GameDVR"
 # Enable clapboard history
 Set-PSReadlineOption -HistorySaveStyle SaveIncrementally
 
-# Install requests module
-py -m pip install requests
-#start-Process powershell.exe -ArgumentList "-Command", "py -m pip install requests" -Wait
-
+# Install python module
+py -m pip install -U requests
+py -m pip install -U selenium
 # Run python.py script
 py $PSScriptRoot\python.py
-#start-Process powershell.exe -ArgumentList "-Command", "py $PSScriptRoo\python.py" -Wait
 
 # Remove installers
 Remove-Item $PSScriptRoot\office.exe
