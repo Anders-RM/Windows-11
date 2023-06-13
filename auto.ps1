@@ -43,8 +43,8 @@ Set-ItemProperty -Path "HKCU:\SOFTWARE\Microsoft\Windows\CurrentVersion\Explorer
 Set-ItemProperty -Path "HKCU:\SOFTWARE\Microsoft\Windows\CurrentVersion\Explorer\Advanced" -Name "TaskbarDa" -Value 0
 Set-ItemProperty -Path "HKCU:\SOFTWARE\Microsoft\Windows\CurrentVersion\Explorer\Advanced" -Name "TaskbarMn" -Value 0
 # Restart explorer.exe
-
 Stop-Process -Name explorer
+
 # Enable clapboard history
 Set-PSReadlineOption -HistorySaveStyle SaveIncrementally
 
@@ -74,10 +74,12 @@ Remove-Item $PSScriptRoot\python.exe
 Move-Item $PSScriptRoot\AfterReboot.ps1 $HOME\downloads\AfterReboot.ps1
 
 # Schedule AfterReboot.ps1 to run at startup
-$action = New-ScheduledTaskAction -Execute "powershell.exe" #-Argument "-File -noexit $HOME\downloads\AfterReboot.ps1"
+$Action = New-ScheduledTaskAction -Execute "PowerShell.exe" -Argument "-NoExit -ExecutionPolicy Bypass -File $HOME\downloads\AfterReboot.ps1"
 $trigger = New-ScheduledTaskTrigger -AtLogOn
 Register-ScheduledTask -Action $action -Trigger $trigger -TaskName "AfterReboot" -Description "Runs a command after reboot"
 
 # Stop transcript and restart computer
 Stop-Transcript
 #Restart-Computer -Force
+
+-NoExit -ExecutionPolicy Bypass
