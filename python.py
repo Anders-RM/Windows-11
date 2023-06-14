@@ -52,13 +52,12 @@ def disable_quick_find():
     # Locate the prefs.js file within the profile directory
     prefs_file = None
     for dirpath, dirnames, filenames in os.walk(profile_dir):
-        for filename in filenames:
-            if filename == "prefs.js":
-                prefs_file = os.path.join(dirpath, filename)
-                break
+        if "prefs.js" in filenames:
+            prefs_file = os.path.join(dirpath, "prefs.js")
+            break
             
     # Check if the prefs.js file was found
-    if prefs_file is None:
+    if prefs_file is None or not os.path.isfile(prefs_file):
         raise Exception("Failed to locate the prefs.js file.")
     
     # Disable Quick Find in the prefs.js file

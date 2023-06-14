@@ -2,7 +2,7 @@
 Set-VMHost -VirtualHardDiskPath "C:\VMs" -VirtualMachinePath "C:\VMs"
 
 # Unregister the scheduled task named "AfterReboot"
-Unregister-ScheduledTask -TaskName "AfterReboot" -Confirm:$false
+Unregister-ScheduledTask -TaskName "AfterReboot" -Confirm:$false -Force
 
 # Remove AfterReboot.ps1 script
 Remove-Item $HOME\downloads\AfterReboot.ps1 -Force
