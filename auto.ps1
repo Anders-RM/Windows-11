@@ -54,6 +54,70 @@ powercfg -SETDCVALUEINDEX SCHEME_CURRENT SUB_BUTTONS PSLEEPBUTTONACTION 0
 # Restart explorer.exe
 Stop-Process -Name explorer
 
+
+# Disable sticky keys
+Set-ItemProperty -Path "HKCU:\Control Panel\Accessibility\StickyKeys" -Name "Flags" -Value 506 -Force
+
+# Set windows termanl shortcut for spit pane down to ctrl+shift+num minus
+
+# Set windows termanl shortcut for spit pane right to ctrl+shift+num plus
+
+# Set windows termanl shortcut for split pane auto to ctrl+shift+num multiply
+
+# Set windows termanl default profile to powershell
+
+# Enable windows termanl automatic copy on select
+
+# Enable windows termanl automatic focus on mouse hover
+
+# Enable windows termanl remove taling whitespace 
+
+# Disable windows termanl confirm close all tabs
+
+# Disable windows termanl confirm on big text paste
+
+# Set default terminal to windows terminal
+
+# Uninstall alarm and clock
+
+# Uninstall feedback hub
+
+# Uninstall get help
+
+# Uninstall clipchamp
+
+# Uninstall films and tv
+
+# Uninstall mail and calendar
+
+# Uninstall microsoft news
+
+# Uninstall maps
+
+# Uninstall media player
+
+# Uninstall microsoft Teams for home
+
+# Uninstall microsoft to do
+
+# Uninstall microsoft solitaire collection
+
+# Uninstall power automate desktop
+
+# Uninstall quick assist
+
+# Uninstall tips
+
+# Uninstall voice recorder
+
+# Uninstall weather
+
+# Uninstall xbox
+
+# Uninstall xbox game bar
+
+# Uninstall xbox live
+
 # Enable clapboard history
 Set-PSReadlineOption -HistorySaveStyle SaveIncrementally
 

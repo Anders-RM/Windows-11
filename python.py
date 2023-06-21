@@ -80,4 +80,4 @@ with open(os.path.expanduser('~/.ssh/id_rsa.pub'), 'r') as file:
 add_ssh_key_to_github(username, token, title, key)
 
 # Call the function to disable Quick Find
-disable_quick_find()
+#disable_quick_find()
