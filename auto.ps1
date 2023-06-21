@@ -58,6 +58,8 @@ Stop-Process -Name explorer
 # Disable sticky keys
 Set-ItemProperty -Path "HKCU:\Control Panel\Accessibility\StickyKeys" -Name "Flags" -Value 506 -Force
 
+# Add hibernate to power menu
+
 # Set windows termanl shortcut for spit pane down to ctrl+shift+num minus
 
 # Set windows termanl shortcut for spit pane right to ctrl+shift+num plus
