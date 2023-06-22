@@ -30,8 +30,18 @@ Start-Process -FilePath $PSScriptRoot\office.exe -Wait
 # Run Microsoft Activation Scripts as admin 
 Start-Process powershell -Verb runAs -ArgumentList 'irm https://massgrave.dev/get | iex' -Wait
 
-# Install Hyper-V
-Start-Process powershell.exe -ArgumentList "-Command", "Enable-WindowsOptionalFeature -Online -FeatureName Microsoft-Hyper-V -All -NoRestart" -Wait
+
+# Check if Hyper-V is installed
+$HyperVInstalled = Get-WindowsOptionalFeature -FeatureName Microsoft-Hyper-V -Online | Select-Object -ExpandProperty State
+
+# If Hyper-V is not installed, install it
+if ($HyperVInstalled -ne 'Enabled') {
+    Write-Host "Hyper-V is not installed. Installing..."
+    Enable-WindowsOptionalFeature -Online -FeatureName Microsoft-Hyper-V -All -NoRestart
+    Write-Host "Hyper-V installation complete."
+} else {
+    Write-Host "Hyper-V is already installed."
+}
 
 # Customize Windows settings
 Set-ItemProperty -Path "HKCU:\SOFTWARE\Microsoft\Windows\CurrentVersion\Themes\Personalize" -Name "AppsUseLightTheme" -Value 0 -Force
@@ -54,71 +64,92 @@ powercfg -SETDCVALUEINDEX SCHEME_CURRENT SUB_BUTTONS PSLEEPBUTTONACTION 0
 # Restart explorer.exe
 Stop-Process -Name explorer
 
-
 # Disable sticky keys
 Set-ItemProperty -Path "HKCU:\Control Panel\Accessibility\StickyKeys" -Name "Flags" -Value 506 -Force
 
 # Add hibernate to power menu
+powercfg /h on
 
-# Set windows termanl shortcut for spit pane down to ctrl+shift+num minus
+# Customize Windows Terminal settings
+$TerminalConfigPath = "$HOME\AppData\Local\Packages\Microsoft.WindowsTerminal_*\LocalState\settings.json"
+$TerminalConfig = Get-Content -Path $TerminalConfigPath | ConvertFrom-Json
 
-# Set windows termanl shortcut for spit pane right to ctrl+shift+num plus
+# Set Windows Terminal shortcut for split pane down to Ctrl+Shift+Num Minus
+$TerminalConfig.keybindings += @{
+    "command": "splitPaneDown",
+    "keys": "ctrl+shift+numpadminus"
+}
 
-# Set windows termanl shortcut for split pane auto to ctrl+shift+num multiply
+# Set Windows Terminal shortcut for split pane right to Ctrl+Shift+Num Plus
+$TerminalConfig.keybindings += @{
+    "command": "splitPaneRight",
+    "keys": "ctrl+shift+numpadadd"
+}
 
-# Set windows termanl default profile to powershell
+# Set Windows Terminal shortcut for split pane auto to Ctrl+Shift+Num Multiply
+$TerminalConfig.keybindings += @{
+    "command": "splitPaneAuto",
+    "keys": "ctrl+shift+numpadmultiply"
+}
 
-# Enable windows termanl automatic copy on select
+# Set Windows Terminal default profile to PowerShell
+$TerminalConfig.defaultProfile = "{0caa0dad-35be-5f56-a8ff-afceeeaa6101}"
 
-# Enable windows termanl automatic focus on mouse hover
+# Enable Windows Terminal automatic copy on select
+$TerminalConfig.profiles.defaults.copyOnSelect = $true
 
-# Enable windows termanl remove taling whitespace 
+# Enable Windows Terminal automatic focus on mouse hover
+$TerminalConfig.profiles.defaults.mouseMode = "automatic"
 
-# Disable windows termanl confirm close all tabs
+# Enable Windows Terminal remove trailing whitespace
+$TerminalConfig.profiles.defaults.trimTrailingWhitespace = $true
 
-# Disable windows termanl confirm on big text paste
+# Disable Windows Terminal confirm close all tabs
+$TerminalConfig.profiles.defaults.confirmCloseAllTabs = $false
 
-# Set default terminal to windows terminal
+# Disable Windows Terminal confirm on big text paste
+$TerminalConfig.profiles.defaults.confirmOnPaste = "never"
 
-# Uninstall alarm and clock
+# Set default terminal to Windows Terminal
+$TerminalConfig.defaultTerminalApplicationPath = "wt.exe"
 
-# Uninstall feedback hub
+# Save the updated configuration back to the file
+$TerminalConfig | ConvertTo-Json | Set-Content -Path $TerminalConfigPath
 
-# Uninstall get help
-
-# Uninstall clipchamp
-
-# Uninstall films and tv
-
-# Uninstall mail and calendar
-
-# Uninstall microsoft news
-
-# Uninstall maps
-
-# Uninstall media player
-
-# Uninstall microsoft Teams for home
-
-# Uninstall microsoft to do
-
-# Uninstall microsoft solitaire collection
-
-# Uninstall power automate desktop
-
-# Uninstall quick assist
-
-# Uninstall tips
-
-# Uninstall voice recorder
-
-# Uninstall weather
-
-# Uninstall xbox
-
-# Uninstall xbox game bar
-
-# Uninstall xbox live
+# Uninstall unnecessary apps
+$AppsToRemove = @(
+    "Microsoft.Microsoft3DViewer"
+    "Microsoft.BingWeather"
+    "Microsoft.GetHelp"
+    "Microsoft.HEIFImageExtension"
+    "Microsoft.Messaging"
+    "Microsoft.MicrosoftOfficeHub"
+    "Microsoft.MicrosoftSolitaireCollection"
+    "Microsoft.MSPaint"
+    "Microsoft.OneConnect"
+    "Microsoft.People"
+    "Microsoft.Print3D"
+    "Microsoft.ScreenSketch"
+    "Microsoft.SkypeApp"
+    "Microsoft.Wallet"
+    "Microsoft.WindowsAlarms"
+    "Microsoft.WindowsCalculator"
+    "Microsoft.WindowsCamera"
+    "Microsoft.WindowsFeedbackHub"
+    "Microsoft.WindowsMaps"
+    "Microsoft.WindowsPhone"
+    "Microsoft.WindowsSoundRecorder"
+    "Microsoft.WindowsStore"
+    "Microsoft.Xbox.TCUI"
+    "Microsoft.XboxApp"
+    "Microsoft.XboxGameOverlay"
+    "Microsoft.XboxGamingOverlay"
+    "Microsoft.XboxIdentityProvider"
+    "Microsoft.XboxSpeechToTextOverlay"
+)
+$AppsToRemove | ForEach-Object {
+    Get-AppxPackage -Name $_ | Remove-AppxPackage -ErrorAction SilentlyContinue
+}
 
 # Enable clapboard history
 Set-PSReadlineOption -HistorySaveStyle SaveIncrementally
