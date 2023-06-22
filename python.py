@@ -66,18 +66,17 @@ def disable_quick_find():
     logging.debug("Quick Find disabled successfully.")
     print("Quick Find disabled successfully.")
 
-# Provide your GitHub username and personal access token
-username = input("Enter your GitHub username: ")
-token = getpass.getpass(prompt='Enter your GitHub token: ')
-
-hostname = socket.gethostname()
-title = f"Home pc anders@{hostname}"
-# Read the content of the SSH key file
-with open(os.path.expanduser('~/.ssh/id_rsa.pub'), 'r') as file:
-    key = file.read().strip()
-
-
 run_script = input("Do you want to add the SSH key to GitHub? (y/n)")
+if run_script == "y":
+    # Provide your GitHub username and personal access token
+    username = input("Enter your GitHub username: ")
+    token = getpass.getpass(prompt='Enter your GitHub token: ')
+    hostname = socket.gethostname()
+    title = f"Home pc anders@{hostname}"
+    # Read the content of the SSH key file
+    with open(os.path.expanduser('~/.ssh/id_rsa.pub'), 'r') as file:
+        key = file.read().strip()
+
 
 if run_script == "y":
     # Call the function to add the SSH key to GitHub

@@ -73,6 +73,7 @@ powercfg /h on
 # Restart explorer.exe
 Stop-Process -Name explorer
 
+# fix
 Move-Item $PSScriptRoot\settings.json "$HOME\AppData\Local\Packages\Microsoft.WindowsTerminal_*\LocalState\settings.json"
 
 
