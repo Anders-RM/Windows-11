@@ -1,12 +1,6 @@
 # Start transcript to log PowerShell commands
 Start-Transcript -Path $PSScriptRoot"\powershell.log" -Append -IncludeInvocationHeader
 
-# Install the Windows Terminal module (if not already installed)
-Install-Module -Name Microsoft.PowerShell.UnixCompleters -Scope CurrentUser
-
-# Import the module
-Import-Module -Name WindowsTerminal
-
 #add qeustion for  office 
 $run_script = Read-Host "Do you want to install and activate Office? (y/n)"
 
@@ -80,131 +74,79 @@ powercfg /h on
 # Restart explorer.exe
 Stop-Process -Name explorer
 
-# #fix this
-# # Customize Windows Terminal settings
-# $TerminalConfigPath = "$HOME\AppData\Local\Packages\Microsoft.WindowsTerminal_*\LocalState\settings.json"
-# $TerminalConfig = Get-Content -Path $TerminalConfigPath | ConvertFrom-Json
-
-# # Set Windows Terminal shortcut for split pane down to Ctrl+Shift+Num Minus
-# $TerminalConfig.keybindings += @{
-#     "command": "splitPaneDown",
-#     "keys": "ctrl+shift+numpadminus"
-# }
-
-# # Set Windows Terminal shortcut for split pane right to Ctrl+Shift+Num Plus
-# $TerminalConfig.keybindings += @{
-#     "command": "splitPaneRight",
-#     "keys": "ctrl+shift+numpadadd"
-# }
-
-# # Set Windows Terminal shortcut for split pane auto to Ctrl+Shift+Num Multiply
-# $TerminalConfig.keybindings += @{
-#     "command": "splitPaneAuto",
-#     "keys": "ctrl+shift+numpadmultiply"
-# }
-
-# # Set Windows Terminal default profile to PowerShell
-# $TerminalConfig.defaultProfile = "{0caa0dad-35be-5f56-a8ff-afceeeaa6101}"
-
-# # Enable Windows Terminal automatic copy on select
-# $TerminalConfig.profiles.defaults.copyOnSelect = $true
-
-# # Enable Windows Terminal automatic focus on mouse hover
-# $TerminalConfig.profiles.defaults.mouseMode = "automatic"
-
-# # Enable Windows Terminal remove trailing whitespace
-# $TerminalConfig.profiles.defaults.trimTrailingWhitespace = $true
-
-# # Disable Windows Terminal confirm close all tabs
-# $TerminalConfig.profiles.defaults.confirmCloseAllTabs = $false
-
-# # Disable Windows Terminal confirm on big text paste
-# $TerminalConfig.profiles.defaults.confirmOnPaste = "never"
-
-# # Set default terminal to Windows Terminal
-# $TerminalConfig.defaultTerminalApplicationPath = "wt.exe"
-
-# # Save the updated configuration back to the file
-# $TerminalConfig | ConvertTo-Json | Set-Content -Path $TerminalConfigPath
-
-#test
-
-# Get the current Windows Terminal settings
-$settings = Get-WindowsTerminalSettings
-
-# Set the desired keybindings
-$settings.Keybindings += @{
-    "command" = "splitPaneDown"
-    "keys" = "ctrl+shift+numpadminus"
-}
-$settings.Keybindings += @{
-    "command" = "splitPaneRight"
-    "keys" = "ctrl+shift+numpadadd"
-}
-$settings.Keybindings += @{
-    "command" = "splitPaneAuto"
-    "keys" = "ctrl+shift+numpadmultiply"
-}
-
-# Set the default profile
-$settings.DefaultProfile = "{0caa0dad-35be-5f56-a8ff-afceeeaa6101}"
-
-# Enable copy on select
-$settings.Profiles.Defaults.CopyOnSelect = $true
-
-# Enable automatic mouse mode
-$settings.Profiles.Defaults.MouseMode = "automatic"
-
-# Enable removing trailing whitespace
-$settings.Profiles.Defaults.TrimTrailingWhitespace = $true
-
-# Disable confirm close all tabs
-$settings.Profiles.Defaults.ConfirmCloseAllTabs = $false
-
-# Disable confirm on big text paste
-$settings.Profiles.Defaults.ConfirmOnPaste = "never"
-
-# Set the default terminal application path
-$settings.DefaultTerminalApplicationPath = "wt.exe"
-
-# Update the Windows Terminal settings
-Set-WindowsTerminalSettings -Settings $settings
+Move-Item $PSScriptRoot\settings.json $HOME\AppData\Local\Packages\Microsoft.WindowsTerminal_*\LocalState\settings.json
 
 # Uninstall unnecessary apps test
-$AppsToRemove = @(
-    "Microsoft.Microsoft3DViewer",
-    "Microsoft.BingWeather",
-    "Microsoft.GetHelp",
-    "Microsoft.HEIFImageExtension",
-    "Microsoft.Messaging",
-    "Microsoft.MicrosoftOfficeHub",
-    "Microsoft.MicrosoftSolitaireCollection",
-    "Microsoft.MSPaint",
-    "Microsoft.OneConnect",
-    "Microsoft.People",
-    "Microsoft.Print3D",
-    "Microsoft.ScreenSketch",
-    "Microsoft.SkypeApp",
-    "Microsoft.Wallet",
-    "Microsoft.WindowsAlarms",
-    "Microsoft.WindowsCalculator",
-    "Microsoft.WindowsCamera",
-    "Microsoft.WindowsFeedbackHub",
-    "Microsoft.WindowsMaps",
-    "Microsoft.WindowsPhone",
-    "Microsoft.WindowsSoundRecorder",
-    "Microsoft.WindowsStore",
-    "Microsoft.Xbox.TCUI",
-    "Microsoft.XboxApp",
-    "Microsoft.XboxGameOverlay",
-    "Microsoft.XboxGamingOverlay",
-    "Microsoft.XboxIdentityProvider",
-    "Microsoft.XboxSpeechToTextOverlay"
+# $AppsToRemove = @(
+#     "Microsoft.Microsoft3DViewer",
+#     "Microsoft.BingWeather",
+#     "Microsoft.GetHelp",
+#     "Microsoft.HEIFImageExtension",
+#     "Microsoft.Messaging",
+#     "Microsoft.MicrosoftOfficeHub",
+#     "Microsoft.MicrosoftSolitaireCollection",
+#     "Microsoft.MSPaint",
+#     "Microsoft.OneConnect",
+#     "Microsoft.People",
+#     "Microsoft.Print3D",
+#     "Microsoft.ScreenSketch",
+#     "Microsoft.SkypeApp",
+#     "Microsoft.Wallet",
+#     "Microsoft.WindowsAlarms",
+#     "Microsoft.WindowsCalculator",
+#     "Microsoft.WindowsCamera",
+#     "Microsoft.WindowsFeedbackHub",
+#     "Microsoft.WindowsMaps",
+#     "Microsoft.WindowsPhone",
+#     "Microsoft.WindowsSoundRecorder",
+#     "Microsoft.WindowsStore",
+#     "Microsoft.Xbox.TCUI",
+#     "Microsoft.XboxApp",
+#     "Microsoft.XboxGameOverlay",
+#     "Microsoft.XboxGamingOverlay",
+#     "Microsoft.XboxIdentityProvider",
+#     "Microsoft.XboxSpeechToTextOverlay"
+# )
+
+# $AppsToRemove | ForEach-Object {
+#     Get-AppxPackage -Name $_ | Remove-AppxPackage -ErrorAction SilentlyContinue
+# }
+
+# Uninstall unnecessary apps test
+Start-Process powershell.exe -ArgumentList "-Command `"& {`$AppsToRemove = @(
+    `"Microsoft.Microsoft3DViewer`",
+    `"Microsoft.BingWeather`",
+    `"Microsoft.GetHelp`",
+    `"Microsoft.HEIFImageExtension`",
+    `"Microsoft.Messaging`",
+    `"Microsoft.MicrosoftOfficeHub`",
+    `"Microsoft.MicrosoftSolitaireCollection`",
+    `"Microsoft.MSPaint`",
+    `"Microsoft.OneConnect`",
+    `"Microsoft.People`",
+    `"Microsoft.Print3D`",
+    `"Microsoft.ScreenSketch`",
+    `"Microsoft.SkypeApp`",
+    `"Microsoft.Wallet`",
+    `"Microsoft.WindowsAlarms`",
+    `"Microsoft.WindowsCalculator`",
+    `"Microsoft.WindowsCamera`",
+    `"Microsoft.WindowsFeedbackHub`",
+    `"Microsoft.WindowsMaps`",
+    `"Microsoft.WindowsPhone`",
+    `"Microsoft.WindowsSoundRecorder`",
+    `"Microsoft.WindowsStore`",
+    `"Microsoft.Xbox.TCUI`",
+    `"Microsoft.XboxApp`",
+    `"Microsoft.XboxGameOverlay`",
+    `"Microsoft.XboxGamingOverlay`",
+    `"Microsoft.XboxIdentityProvider`",
+    `"Microsoft.XboxSpeechToTextOverlay`"
 )
 
-$AppsToRemove | ForEach-Object {
-    Get-AppxPackage -Name $_ | Remove-AppxPackage -ErrorAction SilentlyContinue
-}
+`$AppsToRemove | ForEach-Object {
+    Get-AppxPackage -Name `$_ | Remove-AppxPackage -ErrorAction SilentlyContinue
+}`"}`"" -Wait
 
 # Run a Chris Titus Tech's Windows Utility as admin
 Start-Process powershell -Verb runAs -ArgumentList 'iwr -useb https://christitus.com/win | iex' -Wait
