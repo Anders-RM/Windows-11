@@ -48,7 +48,7 @@ if ($HyperVInstalled -ne 'Enabled') {
     Write-Host "Hyper-V is already installed."
 }
 
-# Customize Windows settings
+# Customize Windows settings search widget
 Set-ItemProperty -Path "HKCU:\SOFTWARE\Microsoft\Windows\CurrentVersion\Themes\Personalize" -Name "AppsUseLightTheme" -Value 0 -Force
 Set-ItemProperty -Path "HKCU:\SOFTWARE\Microsoft\Windows\CurrentVersion\Themes\Personalize" -Name "SystemUsesLightTheme" -Value 0 -Force
 Set-ItemProperty -Path "HKCU:\SOFTWARE\Microsoft\Windows\CurrentVersion\Themes\Personalize" -Name "ColorPrevalence" -Value 0 -Force
@@ -85,6 +85,9 @@ py -m pip install -U requests
 py -m pip install -U selenium
 # Run python.py script
 py $PSScriptRoot\python.py
+
+Start-Process Firefox
+Get-Process Firefox | Stop-Process
 
 
 if ($run_script -eq "y") {
