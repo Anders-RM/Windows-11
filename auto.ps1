@@ -70,27 +70,50 @@ Set-ItemProperty -Path "HKCU:\Control Panel\Accessibility\StickyKeys" -Name "Fla
 # Add hibernate to power menu
 powercfg /h on
 
+# # Customize Windows Terminal settings
+# $TerminalConfigPath = "$HOME\AppData\Local\Packages\Microsoft.WindowsTerminal_*\LocalState\settings.json"
+# $TerminalConfig = Get-Content -Path $TerminalConfigPath | ConvertFrom-Json
+
+# # Set Windows Terminal shortcut for split pane down to Ctrl+Shift+Num Minus
+# $TerminalConfig.keybindings += @{
+#     "command": "splitPaneDown",
+#     "keys": "ctrl+shift+numpadminus"
+# }
+
+# # Set Windows Terminal shortcut for split pane right to Ctrl+Shift+Num Plus
+# $TerminalConfig.keybindings += @{
+#     "command": "splitPaneRight",
+#     "keys": "ctrl+shift+numpadadd"
+# }
+
+# # Set Windows Terminal shortcut for split pane auto to Ctrl+Shift+Num Multiply
+# $TerminalConfig.keybindings += @{
+#     "command": "splitPaneAuto",
+#     "keys": "ctrl+shift+numpadmultiply"
+# }
+
 # Customize Windows Terminal settings
-$TerminalConfigPath = "$HOME\AppData\Local\Packages\Microsoft.WindowsTerminal_*\LocalState\settings.json"
+$TerminalConfigPath = Join-Path $HOME 'AppData\Local\Packages\Microsoft.WindowsTerminal_*\LocalState\settings.json'
 $TerminalConfig = Get-Content -Path $TerminalConfigPath | ConvertFrom-Json
 
 # Set Windows Terminal shortcut for split pane down to Ctrl+Shift+Num Minus
-$TerminalConfig.keybindings += @{
-    "command": "splitPaneDown",
-    "keys": "ctrl+shift+numpadminus"
+$TerminalConfig.keybindings = $TerminalConfig.keybindings + @{
+    "command" = "splitPaneDown"
+    "keys" = "ctrl+shift+numpadminus"
 }
 
 # Set Windows Terminal shortcut for split pane right to Ctrl+Shift+Num Plus
-$TerminalConfig.keybindings += @{
-    "command": "splitPaneRight",
-    "keys": "ctrl+shift+numpadadd"
+$TerminalConfig.keybindings = $TerminalConfig.keybindings + @{
+    "command" = "splitPaneRight"
+    "keys" = "ctrl+shift+numpadadd"
 }
 
 # Set Windows Terminal shortcut for split pane auto to Ctrl+Shift+Num Multiply
-$TerminalConfig.keybindings += @{
-    "command": "splitPaneAuto",
-    "keys": "ctrl+shift+numpadmultiply"
+$TerminalConfig.keybindings = $TerminalConfig.keybindings + @{
+    "command" = "splitPaneAuto"
+    "keys" = "ctrl+shift+numpadmultiply"
 }
+
 
 # Set Windows Terminal default profile to PowerShell
 $TerminalConfig.defaultProfile = "{0caa0dad-35be-5f56-a8ff-afceeeaa6101}"
