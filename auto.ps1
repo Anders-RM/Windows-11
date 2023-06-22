@@ -62,11 +62,10 @@ Set-ItemProperty -Path "HKCU:\Control Panel\Accessibility\StickyKeys" -Name "Fla
 
 # Set the power button behavior to do nothing
 powercfg -SETACVALUEINDEX SCHEME_CURRENT SUB_BUTTONS PBUTTONACTION 0
-powercfg -SETDCVALUEINDEX SCHEME_CURRENT SUB_BUTTONS PBUTTONACTION 0
 
 # Set the sleep button behavior to do nothing
 powercfg -SETACVALUEINDEX SCHEME_CURRENT SUB_BUTTONS PSLEEPBUTTONACTION 0
-powercfg -SETDCVALUEINDEX SCHEME_CURRENT SUB_BUTTONS PSLEEPBUTTONACTION 0
+
 
 # Add hibernate to power menu
 powercfg /h on
@@ -74,79 +73,8 @@ powercfg /h on
 # Restart explorer.exe
 Stop-Process -Name explorer
 
-Move-Item $PSScriptRoot\settings.json $HOME\AppData\Local\Packages\Microsoft.WindowsTerminal_*\LocalState\settings.json
+Move-Item $PSScriptRoot\settings.json "$HOME\AppData\Local\Packages\Microsoft.WindowsTerminal_*\LocalState\settings.json"
 
-# Uninstall unnecessary apps test
-# $AppsToRemove = @(
-#     "Microsoft.Microsoft3DViewer",
-#     "Microsoft.BingWeather",
-#     "Microsoft.GetHelp",
-#     "Microsoft.HEIFImageExtension",
-#     "Microsoft.Messaging",
-#     "Microsoft.MicrosoftOfficeHub",
-#     "Microsoft.MicrosoftSolitaireCollection",
-#     "Microsoft.MSPaint",
-#     "Microsoft.OneConnect",
-#     "Microsoft.People",
-#     "Microsoft.Print3D",
-#     "Microsoft.ScreenSketch",
-#     "Microsoft.SkypeApp",
-#     "Microsoft.Wallet",
-#     "Microsoft.WindowsAlarms",
-#     "Microsoft.WindowsCalculator",
-#     "Microsoft.WindowsCamera",
-#     "Microsoft.WindowsFeedbackHub",
-#     "Microsoft.WindowsMaps",
-#     "Microsoft.WindowsPhone",
-#     "Microsoft.WindowsSoundRecorder",
-#     "Microsoft.WindowsStore",
-#     "Microsoft.Xbox.TCUI",
-#     "Microsoft.XboxApp",
-#     "Microsoft.XboxGameOverlay",
-#     "Microsoft.XboxGamingOverlay",
-#     "Microsoft.XboxIdentityProvider",
-#     "Microsoft.XboxSpeechToTextOverlay"
-# )
-
-# $AppsToRemove | ForEach-Object {
-#     Get-AppxPackage -Name $_ | Remove-AppxPackage -ErrorAction SilentlyContinue
-# }
-
-# Uninstall unnecessary apps test
-Start-Process powershell.exe -ArgumentList "-Command `"& {`$AppsToRemove = @(
-    `"Microsoft.Microsoft3DViewer`",
-    `"Microsoft.BingWeather`",
-    `"Microsoft.GetHelp`",
-    `"Microsoft.HEIFImageExtension`",
-    `"Microsoft.Messaging`",
-    `"Microsoft.MicrosoftOfficeHub`",
-    `"Microsoft.MicrosoftSolitaireCollection`",
-    `"Microsoft.MSPaint`",
-    `"Microsoft.OneConnect`",
-    `"Microsoft.People`",
-    `"Microsoft.Print3D`",
-    `"Microsoft.ScreenSketch`",
-    `"Microsoft.SkypeApp`",
-    `"Microsoft.Wallet`",
-    `"Microsoft.WindowsAlarms`",
-    `"Microsoft.WindowsCalculator`",
-    `"Microsoft.WindowsCamera`",
-    `"Microsoft.WindowsFeedbackHub`",
-    `"Microsoft.WindowsMaps`",
-    `"Microsoft.WindowsPhone`",
-    `"Microsoft.WindowsSoundRecorder`",
-    `"Microsoft.WindowsStore`",
-    `"Microsoft.Xbox.TCUI`",
-    `"Microsoft.XboxApp`",
-    `"Microsoft.XboxGameOverlay`",
-    `"Microsoft.XboxGamingOverlay`",
-    `"Microsoft.XboxIdentityProvider`",
-    `"Microsoft.XboxSpeechToTextOverlay`"
-)
-
-`$AppsToRemove | ForEach-Object {
-    Get-AppxPackage -Name `$_ | Remove-AppxPackage -ErrorAction SilentlyContinue
-}`"}`"" -Wait
 
 # Run a Chris Titus Tech's Windows Utility as admin
 Start-Process powershell -Verb runAs -ArgumentList 'iwr -useb https://christitus.com/win | iex' -Wait
