@@ -76,8 +76,12 @@ title = f"Home pc anders@{hostname}"
 with open(os.path.expanduser('~/.ssh/id_rsa.pub'), 'r') as file:
     key = file.read().strip()
 
-# Call the function to add the SSH key to GitHub
-add_ssh_key_to_github(username, token, title, key)
+
+run_script = input("Do you want to add the SSH key to GitHub? (y/n)")
+
+if run_script == "y":
+    # Call the function to add the SSH key to GitHub
+    add_ssh_key_to_github(username, token, title, key)
 
 # Call the function to disable Quick Find
-#disable_quick_find()
+disable_quick_find()
