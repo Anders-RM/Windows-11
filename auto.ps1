@@ -1,12 +1,21 @@
 # Start transcript to log PowerShell commands
 Start-Transcript -Path $PSScriptRoot"\powershell.log" -Append -IncludeInvocationHeader
+
+# Download the installer
+Invoke-WebRequest "https://dotnet.microsoft.com/en-us/download/dotnet-framework/thank-you/net48-web-installer" -OutFile $PSScriptRoot\dotnet_framework_installer.exe
+
+# Install the .NET Framework
+Start-Process -FilePath $PSScriptRoot\dotnet_framework_installer.exe -ArgumentList "/q /norestart" -Wait
+
+# Delete the installer
+Remove-Item -Path $PSScriptRoot\dotnet_framework_installer.exe
+
 function Read-HostWithMessageBox($prompt) {
     Add-Type -AssemblyName System.Windows.Forms
     $messageBox = New-Object System.Windows.Forms.MessageBox
     $result = $messageBox::Show($prompt, "Input Required", 1, 0)
     return $result
 }
-
 
 #add qeustion for  office 
 $run_script = Read-HostWithMessageBox "Do you want to install and activate Office? (y/n)"
@@ -15,6 +24,12 @@ $run_script = Read-HostWithMessageBox "Do you want to install and activate Offic
 $Password = Read-Host -Prompt "Enter password for SSH key" -AsSecureString
 $SSHPassword = [System.Runtime.InteropServices.Marshal]::PtrToStringAuto([System.Runtime.InteropServices.Marshal]::SecureStringToBSTR($Password))
 ssh-keygen -t rsa -b 4096 -C "Main Key" -f $HOME/.ssh/id_rsa -N $SSHPassword -q   #create ssh key
+
+# Download the installer
+Invoke-WebRequest -Uri "https://github.com/microsoft/winget-cli/releases/download/v1.5.1572/Microsoft.DesktopAppInstaller_8wekyb3d8bbwe.msixbundle" -OutFile $PSScriptRoot\winget.appxbundle
+
+# Install Winget
+Add-AppxPackage -Path $PSScriptRoot\winget.appxbundle
 
 # Install Git and set up Git in Windows using winget
 winget install Git.Git -e --accept-package-agreements --accept-source-agreements
@@ -32,6 +47,9 @@ if ($run_script -eq "y") {
 
     # Start the Office installer in a separate process
     Start-Process -FilePath $PSScriptRoot\office.exe -Wait
+
+    # Remove installers
+    Remove-Item $PSScriptRoot\office.exe
 
     # Run Microsoft Activation Scripts as admin 
     Start-Process powershell -Verb runAs -ArgumentList 'irm https://massgrave.dev/get | iex' -Wait
@@ -93,11 +111,6 @@ py $PSScriptRoot\python.py
 
 Start-Process Firefox
 Get-Process Firefox | Stop-Process
-
-if ($run_script -eq "y") {
-    # Remove installers
-    Remove-Item $PSScriptRoot\office.exe
-}
 
 # Remove installers
 Remove-Item $PSScriptRoot\python.exe
