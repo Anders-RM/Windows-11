@@ -1,15 +1,6 @@
 # Start transcript to log PowerShell commands
 Start-Transcript -Path $PSScriptRoot"\powershell.log" -Append -IncludeInvocationHeader
 
-# Download the installer
-Invoke-WebRequest "https://dotnet.microsoft.com/en-us/download/dotnet-framework/thank-you/net48-web-installer" -OutFile $PSScriptRoot\dotnet_framework_installer.exe
-
-# Install the .NET Framework
-Start-Process -FilePath $PSScriptRoot\dotnet_framework_installer.exe -ArgumentList "/q /norestart" -Wait
-
-# Delete the installer
-Remove-Item -Path $PSScriptRoot\dotnet_framework_installer.exe
-
 function Read-HostWithMessageBox($prompt) {
     Add-Type -AssemblyName System.Windows.Forms
     $messageBox = New-Object System.Windows.Forms.MessageBox
