@@ -11,66 +11,10 @@ $message = "Do you want to install and activate Office?"
 $result = [System.Windows.Forms.MessageBox]::Show($message, $title, [System.Windows.Forms.MessageBoxButtons]::YesNo)
 
 
-# # Set up ssh key for GitHub
-# $Password = Read-Host -Prompt "Enter password for SSH key" -AsSecureString
-# $SSHPassword = [System.Runtime.InteropServices.Marshal]::PtrToStringAuto([System.Runtime.InteropServices.Marshal]::SecureStringToBSTR($Password))
-
-# Define the prompt message
-$title = "SSH Password"
-$message = "Enter password for SSH key"
-
-# Display the MessageBox and get the user's choice
-$dialogResult = [System.Windows.Forms.MessageBox]::Show($message, $title, [System.Windows.Forms.MessageBoxButtons]::OKCancel)
-
-if ($dialogResult -eq [System.Windows.Forms.DialogResult]::OK) {
-    # Prompt for password and convert it to a secure string
-    $passwordPrompt = New-Object -TypeName System.Windows.Forms.TextBox
-    $passwordPrompt.UseSystemPasswordChar = $true
-    $passwordPrompt.PasswordChar = "*"
-
-    $form = New-Object -TypeName System.Windows.Forms.Form
-    $form.Text = $title
-    $form.Width = 300
-    $form.Height = 120
-    $form.FormBorderStyle = [System.Windows.Forms.FormBorderStyle]::FixedSingle
-    $form.StartPosition = [System.Windows.Forms.FormStartPosition]::CenterScreen
-    $form.MaximizeBox = $false
-    $form.AcceptButton = $form.OkButton
-
-    $form.Controls.Add($passwordPrompt)
-
-    $okButton = New-Object -TypeName System.Windows.Forms.Button
-    $okButton.Text = "OK"
-    $okButton.DialogResult = [System.Windows.Forms.DialogResult]::OK
-    $okButton.Left = 100
-    $okButton.Top = 50
-    $okButton.Width = 75
-
-    $cancelButton = New-Object -TypeName System.Windows.Forms.Button
-    $cancelButton.Text = "Cancel"
-    $cancelButton.DialogResult = [System.Windows.Forms.DialogResult]::Cancel
-    $cancelButton.Left = 180
-    $cancelButton.Top = 50
-    $cancelButton.Width = 75
-
-    $form.AcceptButton = $okButton
-    $form.CancelButton = $cancelButton
-
-    $form.Controls.Add($okButton)
-    $form.Controls.Add($cancelButton)
-
-    $form.ShowDialog()
-
-    $SSHPassword = $passwordPrompt.Text
-    $Password = ConvertTo-SecureString -String $SSHPassword -AsPlainText -Force
-
-    ssh-keygen -t rsa -b 4096 -C "Main Key" -f $HOME/.ssh/id_rsa -N $Password -q   #create ssh key
-} else {
-    # User canceled the SSH password prompt
-    Write-Host "SSH password prompt canceled."
-}
-
-
+# Set up ssh key for GitHub
+$Password = Read-Host -Prompt "Enter password for SSH key" -AsSecureString
+$SSHPassword = [System.Runtime.InteropServices.Marshal]::PtrToStringAuto([System.Runtime.InteropServices.Marshal]::SecureStringToBSTR($Password))
+ssh-keygen -t rsa -b 4096 -C "Main Key" -f $HOME/.ssh/id_rsa -N $SSHPassword -q   #create ssh key
 
 # Download the installer
 Invoke-WebRequest -Uri "https://github.com/microsoft/winget-cli/releases/download/v1.5.1572/Microsoft.DesktopAppInstaller_8wekyb3d8bbwe.msixbundle" -OutFile $PSScriptRoot\winget.appxbundle
