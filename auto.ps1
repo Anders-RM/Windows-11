@@ -90,9 +90,13 @@ powercfg /h on
 
 # Restart explorer.exe
 Stop-Process -Name explorer
+$wtSettings = "$HOME\AppData\Local\Packages\Microsoft.WindowsTerminal_8wekyb3d8bbwe\LocalState"
 
+if (-not (Test-Path $wtSettings)) {
+    New-Item $wtSettings -ItemType Directory -Force
+}
 
-Move-Item $PSScriptRoot\settings.json "$HOME\AppData\Local\Packages\Microsoft.WindowsTerminal_8wekyb3d8bbwe\LocalState\settings.json"
+Move-Item $PSScriptRoot\settings.json "$wtSettings\settings.json"
 
 # Install python module
 py -m pip install -U requests
@@ -101,6 +105,7 @@ py -m pip install -U selenium
 py $PSScriptRoot\python.py
 
 Start-Process Firefox
+Start-Sleep -Seconds 2
 Get-Process Firefox | Stop-Process
 
 # Remove installers
