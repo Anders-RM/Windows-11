@@ -85,9 +85,6 @@ powercfg -SETACVALUEINDEX SCHEME_CURRENT SUB_BUTTONS PBUTTONACTION 0
 # Set the sleep button behavior to do nothing
 powercfg -SETACVALUEINDEX SCHEME_CURRENT SUB_BUTTONS PSLEEPBUTTONACTION 0
 
-# Add hibernate to power menu
-powercfg /h on
-
 # Restart explorer.exe
 Stop-Process -Name explorer
 $wtSettings = "$HOME\AppData\Local\Packages\Microsoft.WindowsTerminal_8wekyb3d8bbwe\LocalState"
@@ -95,11 +92,11 @@ $wtSettings = "$HOME\AppData\Local\Packages\Microsoft.WindowsTerminal_8wekyb3d8b
 if (-not (Test-Path $wtSettings)) {
     New-Item $wtSettings -ItemType Directory -Force
 }
-
-Move-Item $PSScriptRoot\settings.json "$wtSettings\settings.json"
+#replays file 
+Move-Item $PSScriptRoot\settings.json "$wtSettings\settings.json" -Force
 
 Start-Process Firefox
-Start-Sleep -Seconds 2
+Start-Sleep -Seconds 4
 Get-Process Firefox | Stop-Process
 
 # Remove installers
@@ -110,7 +107,7 @@ Remove-Item $PSScriptRoot\winget.appxbundle
 Move-Item $PSScriptRoot\AfterReboot.ps1 $HOME\downloads\AfterReboot.ps1
 
 # Schedule AfterReboot.ps1 to run at startup
-$Action = New-ScheduledTaskAction -Execute "PowerShell.exe" -Argument "-NoExit -ExecutionPolicy Bypass -File $HOME\downloads\AfterReboot.ps1" 
+$Action = New-ScheduledTaskAction -Execute "PowerShell.exe" -Argument "-ExecutionPolicy Bypass -File $HOME\downloads\AfterReboot.ps1" 
 $trigger = New-ScheduledTaskTrigger -AtLogOn
 Register-ScheduledTask -Action $action -Trigger $trigger -TaskName "AfterReboot" -Description "Runs a command after reboot" -RunLevel Highest
 
