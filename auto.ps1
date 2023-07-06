@@ -64,7 +64,10 @@ if ($HyperVInstalled -ne 'Enabled') {
     Write-Host "Hyper-V is already installed."
 }
 
-# Customize Windows settings search widget
+# Run a Chris Titus Tech's Windows Utility as admin
+Start-Process powershell -Verb runAs -ArgumentList 'iwr -useb https://christitus.com/win | iex' -Wait
+
+# Customize Windows settings
 Set-ItemProperty -Path "HKCU:\SOFTWARE\Microsoft\Windows\CurrentVersion\Themes\Personalize" -Name "AppsUseLightTheme" -Value 0 -Force
 Set-ItemProperty -Path "HKCU:\SOFTWARE\Microsoft\Windows\CurrentVersion\Themes\Personalize" -Name "SystemUsesLightTheme" -Value 0 -Force
 Set-ItemProperty -Path "HKCU:\SOFTWARE\Microsoft\Windows\CurrentVersion\Themes\Personalize" -Name "ColorPrevalence" -Value 0 -Force
@@ -90,9 +93,6 @@ Stop-Process -Name explorer
 
 
 Move-Item $PSScriptRoot\settings.json "$HOME\AppData\Local\Packages\Microsoft.WindowsTerminal_8wekyb3d8bbwe\LocalState\settings.json"
-
-# Run a Chris Titus Tech's Windows Utility as admin
-Start-Process powershell -Verb runAs -ArgumentList 'iwr -useb https://christitus.com/win | iex' -Wait
 
 # Install python module
 py -m pip install -U requests
