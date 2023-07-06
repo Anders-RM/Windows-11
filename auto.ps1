@@ -1,8 +1,15 @@
 # Start transcript to log PowerShell commands
 Start-Transcript -Path $PSScriptRoot"\powershell.log" -Append -IncludeInvocationHeader
+function Read-HostWithMessageBox($prompt) {
+    Add-Type -AssemblyName System.Windows.Forms
+    $messageBox = New-Object System.Windows.Forms.MessageBox
+    $result = $messageBox::Show($prompt, "Input Required", 1, 0)
+    return $result
+}
+
 
 #add qeustion for  office 
-$run_script = Read-Host "Do you want to install and activate Office? (y/n)"
+$run_script = Read-HostWithMessageBox "Do you want to install and activate Office? (y/n)"
 
 # Set up ssh key for GitHub
 $Password = Read-Host -Prompt "Enter password for SSH key" -AsSecureString
@@ -15,7 +22,7 @@ Start-Process powershell.exe -ArgumentList "-Command", "git config --global user
 Start-Process powershell.exe -ArgumentList "-Command", "git config --global user.email 'Anders_RMathiesen@pm.me'" -Wait
 
 # Install Visual Studio Code and Visual Studio Code Insiders using winget
-#winget install Microsoft.VisualStudioCode -e --accept-package-agreements --accept-source-agreements
+winget install Microsoft.VisualStudioCode -e --accept-package-agreements --accept-source-agreements
 winget install Microsoft.VisualStudioCode.Insiders  -e --accept-package-agreements --accept-source-agreements
 
 
@@ -66,7 +73,6 @@ powercfg -SETACVALUEINDEX SCHEME_CURRENT SUB_BUTTONS PBUTTONACTION 0
 # Set the sleep button behavior to do nothing
 powercfg -SETACVALUEINDEX SCHEME_CURRENT SUB_BUTTONS PSLEEPBUTTONACTION 0
 
-
 # Add hibernate to power menu
 powercfg /h on
 
@@ -75,7 +81,6 @@ Stop-Process -Name explorer
 
 # fix
 Move-Item $PSScriptRoot\settings.json "$HOME\AppData\Local\Packages\Microsoft.WindowsTerminal_*\LocalState\settings.json"
-
 
 # Run a Chris Titus Tech's Windows Utility as admin
 Start-Process powershell -Verb runAs -ArgumentList 'iwr -useb https://christitus.com/win | iex' -Wait
@@ -88,7 +93,6 @@ py $PSScriptRoot\python.py
 
 Start-Process Firefox
 Get-Process Firefox | Stop-Process
-
 
 if ($run_script -eq "y") {
     # Remove installers
