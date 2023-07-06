@@ -1,18 +1,15 @@
 # Start transcript to log PowerShell commands
 Start-Transcript -Path $PSScriptRoot"\powershell.log" -Append -IncludeInvocationHeader
 
+Add-Type -AssemblyName System.Windows.Forms
+
 # Define the prompt message
 $title = "Office Installation"
 $message = "Do you want to install and activate Office?"
 
-# Define the options
-$yes = New-Object System.Management.Automation.Host.ChoiceDescription "&Yes", "Install and activate Office."
-$no = New-Object System.Management.Automation.Host.ChoiceDescription "&No", "Do not install Office."
+# Display the MessageBox and get the user's choice
+$result = [System.Windows.Forms.MessageBox]::Show($message, $title, [System.Windows.Forms.MessageBoxButtons]::YesNo)
 
-$options = [System.Management.Automation.Host.ChoiceDescription[]]($yes, $no)
-
-# Display the prompt and get the user's choice
-$result = $host.ui.PromptForChoice($title, $message, $options, 0) 
 
 # Set up ssh key for GitHub
 $Password = Read-Host -Prompt "Enter password for SSH key" -AsSecureString
@@ -35,7 +32,7 @@ winget install Microsoft.VisualStudioCode -e --accept-package-agreements --accep
 winget install Microsoft.VisualStudioCode.Insiders  -e --accept-package-agreements --accept-source-agreements
 
 
-if ($result -eq 0) {
+if ($result -eq "Yes") {
     # Download and install Office 365 from Microsoft
     Invoke-WebRequest "https://c2rsetup.officeapps.live.com/c2r/download.aspx?ProductreleaseID=O365ProPlusRetail&platform=x86&language=en-us&version=O16GA" -OutFile $PSScriptRoot\office.exe
 
@@ -91,8 +88,8 @@ powercfg /h on
 # Restart explorer.exe
 Stop-Process -Name explorer
 
-# fix
-Move-Item $PSScriptRoot\settings.json "$HOME\AppData\Local\Packages\Microsoft.WindowsTerminal_*\LocalState\settings.json"
+
+Move-Item $PSScriptRoot\settings.json "$HOME\AppData\Local\Packages\Microsoft.WindowsTerminal_8wekyb3d8bbwe\LocalState\settings.json"
 
 # Run a Chris Titus Tech's Windows Utility as admin
 Start-Process powershell -Verb runAs -ArgumentList 'iwr -useb https://christitus.com/win | iex' -Wait
@@ -115,7 +112,7 @@ Move-Item $PSScriptRoot\AfterReboot.ps1 $HOME\downloads\AfterReboot.ps1
 # Schedule AfterReboot.ps1 to run at startup
 $Action = New-ScheduledTaskAction -Execute "PowerShell.exe" -Argument "-NoExit -ExecutionPolicy Bypass -File $HOME\downloads\AfterReboot.ps1" 
 $trigger = New-ScheduledTaskTrigger -AtLogOn
-Register-ScheduledTask -Action $action -Trigger $trigger -TaskName "AfterReboot" -Description "Runs a command after reboot" -RunLevel HighestAvailable
+Register-ScheduledTask -Action $action -Trigger $trigger -TaskName "AfterReboot" -Description "Runs a command after reboot" -RunLevel Highest
 
 # Stop transcript and restart computer
 Stop-Transcript
