@@ -20,8 +20,6 @@ $SSHPassword = [System.Runtime.InteropServices.Marshal]::PtrToStringAuto([System
 ssh-keygen -t rsa -b 4096 -C "Main Key" -f $HOME/.ssh/id_rsa -N $SSHPassword -q   #create ssh key
 
 #Uninstall Apps
-#xbox live
-
 
 Get-Process onedrive | Stop-Process -Force
 
@@ -61,6 +59,7 @@ $appList = @("Microsoft.BingNews",
  "Microsoft.Todos",
  "Microsoft.GamingApp",
  "Microsoft.GetHelp",
+ "Microsoft.Getstarted",
  "Microsoft.windowscommunicationsapps")
 
 # Loop through the list
