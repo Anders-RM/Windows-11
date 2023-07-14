@@ -6,7 +6,7 @@ Add-Type -AssemblyName System.Windows.Forms
 $Prompt = "Do you want to install and activate Office?"
 $Title = "Office Installation"
 
-$Choice = Read-Host -Prompt "$Prompt" (Y/N) -Title "$Title"
+$Choice = Read-Host -Prompt "$Prompt (Y/N)" -Title "$Title"
 $Choice = $Choice.ToUpper()
 
 
