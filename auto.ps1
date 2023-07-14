@@ -180,7 +180,7 @@ if (-not (Test-Path $wtSettings)) {
 Move-Item $PSScriptRoot\settings.json "$wtSettings\settings.json" -Force
 
 Start-Process Firefox
-Start-Sleep -Seconds 10
+Start-Sleep -Seconds 5
 Get-Process Firefox | Stop-Process
 
 # Remove installers
@@ -203,4 +203,4 @@ py $PSScriptRoot\python.py
 
 # Stop transcript and restart computer
 Stop-Transcript
-#Restart-Computer -Force
+Restart-Computer -Force
