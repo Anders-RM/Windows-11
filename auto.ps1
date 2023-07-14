@@ -1,13 +1,17 @@
 # Start transcript to log PowerShell commands
 Start-Transcript -Path $PSScriptRoot"\powershell.log" -Append -IncludeInvocationHeader
 
-Add-Type -AssemblyName System.Windows.Forms
-
 $Prompt = "Do you want to install and activate Office?"
 $Title = "Office Installation"
 
-$Choice = Read-Host -Prompt "$Prompt" -Title "$Title"
-$Choice = $Choice.ToUpper()
+$choices = [System.Management.Automation.Host.ChoiceDescription[]]@(
+    (New-Object System.Management.Automation.Host.ChoiceDescription -ArgumentList '&Yes'),
+    (New-Object System.Management.Automation.Host.ChoiceDescription -ArgumentList '&No')
+)
+
+$defaultChoice = 0
+
+$choiceResult = $host.ui.PromptForChoice($Title, $Prompt, $choices, $defaultChoice)
 
 
 # Set up ssh key for GitHub
@@ -106,7 +110,7 @@ winget install Microsoft.VisualStudioCode -e --accept-package-agreements --accep
 #winget install Microsoft.VisualStudioCode.Insiders  -e --accept-package-agreements --accept-source-agreements
 
 
-if ($Choice -eq "Y" -or $Choice -eq "YES") {
+if ($choiceResult -eq $defaultChoice) {
     # Download and install Office 365 from Microsoft
     Invoke-WebRequest "https://c2rsetup.officeapps.live.com/c2r/download.aspx?ProductreleaseID=O365ProPlusRetail&platform=x86&language=en-us&version=O16GA" -OutFile $PSScriptRoot\office.exe
 
