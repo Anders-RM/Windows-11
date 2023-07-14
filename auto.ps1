@@ -6,11 +6,10 @@ Add-Type -AssemblyName System.Windows.Forms
 $Prompt = "Do you want to install and activate Office?"
 $Title = "Office Installation"
 
-$Choice = Read-Host -Prompt "$Prompt (Y/N)" -Title "$Title"
+$Choice = Read-Host -Prompt "$Prompt" -Title "$Title"
 $Choice = $Choice.ToUpper()
 
 
-psm1
 # Set up ssh key for GitHub
 $Password = Read-Host -Prompt "Enter password for SSH key" -AsSecureString
 $SSHPassword = [System.Runtime.InteropServices.Marshal]::PtrToStringAuto([System.Runtime.InteropServices.Marshal]::SecureStringToBSTR($Password))
