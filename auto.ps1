@@ -3,32 +3,35 @@ Start-Transcript -Path $PSScriptRoot"\powershell.log" -Append -IncludeInvocation
 
 Add-Type -AssemblyName System.Windows.Forms
 
-# Define the prompt message
-$title = "Office Installation"
-$message = "Do you want to install and activate Office?"
+$Prompt = "Do you want to install and activate Office?"
+$Title = "Office Installation"
 
-# Display the MessageBox and get the user's choice
-$result = [System.Windows.Forms.MessageBox]::Show($message, $title, [System.Windows.Forms.MessageBoxButtons]::YesNo)
+$Choice = Read-Host -Prompt "$Prompt" (Y/N) -Title "$Title"
+$Choice = $Choice.ToUpper()
 
+
+psm1
 # Set up ssh key for GitHub
 $Password = Read-Host -Prompt "Enter password for SSH key" -AsSecureString
 $SSHPassword = [System.Runtime.InteropServices.Marshal]::PtrToStringAuto([System.Runtime.InteropServices.Marshal]::SecureStringToBSTR($Password))
 ssh-keygen -t rsa -b 4096 -C "Main Key" -f $HOME/.ssh/id_rsa -N $SSHPassword -q   #create ssh key
 
 #Uninstall Apps
-#   Mail & Calendar
-#  OneDrive
-#  Tips
-#  xbox live
+#xbox live
 
-Stop-Process OneDrive
+
+Get-Process onedrive | Stop-Process -Force
+
 Write-Output "Remove OneDrive"
-if (Test-Path "$env:systemroot\System32\OneDriveSetup.exe") {
-    & "$env:systemroot\System32\OneDriveSetup.exe" /uninstall
+if (Test-Path "$env:windir\System32\OneDriveSetup.exe") {
+    start-process "$env:windir\System32\OneDriveSetup.exe" /uninstall
+    Write-Host "OneDrive32 has been uninstalled."
 }
-if (Test-Path "$env:systemroot\SysWOW64\OneDriveSetup.exe") {
-    & "$env:systemroot\SysWOW64\OneDriveSetup.exe" /uninstall
+if (Test-Path "$env:windir\SysWOW64\OneDriveSetup.exe") {
+    start-process "$env:windir\SysWOW64\OneDriveSetup.exe" /uninstall
+    Write-Host "OneDrive64 has been uninstalled."
 }
+
 
 # Define the list of apps to uninstall
 $appList = @("Microsoft.BingNews",
@@ -45,6 +48,10 @@ $appList = @("Microsoft.BingNews",
  "Microsoft.BingWeather",
  "Microsoft.XboxGamingOverlay",
  "Microsoft.XboxGameOverlay",
+ "Microsoft.XboxGameCallableUI",
+ "Microsoft.Xbox.TCUI",
+ "Microsoft.XboxSpeechToTextOverlay",
+ "Microsoft.XboxIdentityProvider",
  "Microsoft.YourPhone",
  "Microsoft.ZuneMusic",
  "Microsoft.ZuneVideo",
@@ -100,7 +107,7 @@ winget install Microsoft.VisualStudioCode -e --accept-package-agreements --accep
 #winget install Microsoft.VisualStudioCode.Insiders  -e --accept-package-agreements --accept-source-agreements
 
 
-if ($result -eq "Yes") {
+if ($Choice -eq "Y" -or $Choice -eq "YES") {
     # Download and install Office 365 from Microsoft
     Invoke-WebRequest "https://c2rsetup.officeapps.live.com/c2r/download.aspx?ProductreleaseID=O365ProPlusRetail&platform=x86&language=en-us&version=O16GA" -OutFile $PSScriptRoot\office.exe
 
