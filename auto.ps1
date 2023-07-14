@@ -59,6 +59,8 @@ foreach($app in $appList) {
     }
 }
 
+$AppInstaller = Get-AppxPackage Microsoft.DesktopAppInstaller
+
 if ($AppInstaller) {
     Write-Output "Winget is installed."
 } else {
@@ -68,6 +70,8 @@ if ($AppInstaller) {
 
     # Install Winget
     Add-AppxPackage -Path $PSScriptRoot\winget.appxbundle
+    
+    Remove-Item $PSScriptRoot\winget.appxbundle
 }
 
 
@@ -152,7 +156,7 @@ Get-Process Firefox | Stop-Process
 
 # Remove installers
 Remove-Item $PSScriptRoot\python.exe
-Remove-Item $PSScriptRoot\winget.appxbundle
+
 
 # Move AfterReboot.ps1 to downloads folder
 Move-Item $PSScriptRoot\AfterReboot.ps1 $HOME\downloads\AfterReboot.ps1
