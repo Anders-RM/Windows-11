@@ -1,6 +1,12 @@
 # Start transcript to log PowerShell commands
 Start-Transcript -Path $PSScriptRoot"\powershell.log" -Append -IncludeInvocationHeader
 
+#urls
+$winget = "https://github.com/microsoft/winget-cli/releases/download/v1.5.1572/Microsoft.DesktopAppInstaller_8wekyb3d8bbwe.msixbundle"
+$office = "https://c2rsetup.officeapps.live.com/c2r/download.aspx?ProductreleaseID=O365ProPlusRetail&platform=x86&language=en-us&version=O16GA"
+$python = "https://www.python.org/ftp/python/3.11.4/python-3.11.4-amd64.exe"
+
+
 $Prompt = "Do you want to install and activate Office?"
 $Title = "Office Installation"
 
@@ -32,7 +38,7 @@ if (Test-Path "$env:windir\SysWOW64\OneDriveSetup.exe") {
 }
 
 # Define the list of apps to uninstall
-# back after reboot
+
 $appList = @("Microsoft.BingNews",
  "Microsoft.WindowsAlarms",
  "Clipchamp.Clipchamp",
@@ -90,7 +96,7 @@ try {
 catch {
     Write-Output "Winget is not installed."
     # Download the installer
-    Invoke-WebRequest -Uri "https://github.com/microsoft/winget-cli/releases/download/v1.5.1572/Microsoft.DesktopAppInstaller_8wekyb3d8bbwe.msixbundle" -OutFile $PSScriptRoot\winget.appxbundle
+    Invoke-WebRequest -Uri "$winget" -OutFile $PSScriptRoot\winget.appxbundle
 
     # Install Winget
     Add-AppxPackage -Path $PSScriptRoot\winget.appxbundle
@@ -108,7 +114,7 @@ winget install Microsoft.VisualStudioCode -e --accept-package-agreements --accep
 
 if ($choiceResult -eq $defaultChoice) {
     # Download and install Office 365 from Microsoft
-    Invoke-WebRequest "https://c2rsetup.officeapps.live.com/c2r/download.aspx?ProductreleaseID=O365ProPlusRetail&platform=x86&language=en-us&version=O16GA" -OutFile $PSScriptRoot\office.exe
+    Invoke-WebRequest "$office" -OutFile $PSScriptRoot\office.exe
 
     # Start the Office installer in a separate process
     Start-Process -FilePath $PSScriptRoot\office.exe -Wait
@@ -121,7 +127,7 @@ if ($choiceResult -eq $defaultChoice) {
 }
 
 # Install Python version 3.11.4 by downloading from python.org
-Invoke-WebRequest https://www.python.org/ftp/python/3.11.4/python-3.11.4-amd64.exe -OutFile $PSScriptRoot\python.exe
+Invoke-WebRequest "$python" -OutFile $PSScriptRoot\python.exe
 
 # Start the Python installer in a separate process
 Start-Process -FilePath $PSScriptRoot\python.exe -Wait
