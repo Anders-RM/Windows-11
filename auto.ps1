@@ -32,6 +32,7 @@ if (Test-Path "$env:windir\SysWOW64\OneDriveSetup.exe") {
 }
 
 # Define the list of apps to uninstall
+# back after reboot
 $appList = @("Microsoft.BingNews",
  "Microsoft.WindowsAlarms",
  "Clipchamp.Clipchamp",
@@ -59,27 +60,28 @@ $appList = @("Microsoft.BingNews",
  "Microsoft.Getstarted",
  "Microsoft.windowscommunicationsapps")
 
-# Loop through the list
 foreach($app in $appList) {
     # Get the package
-    $package = Get-AppxPackage | Where-Object { $_.Name -eq $app }
+    $package = Get-AppxPackage -AllUsers | Where-Object { $_.Name -eq $app }
 
     # Check if the package exists
     if($package) {
-        try {
-            # Attempt to remove the package
-            $package | Remove-AppxPackage -ErrorAction Stop
-
-            Write-Host "$app has been uninstalled."
-        }
-        catch {
-            Write-Host "Failed to uninstall $app."
+        foreach($package in $package){
+            try {
+                # Attempt to remove the package for all users
+                Remove-AppxPackage -package $package.PackageFullName -AllUsers -ErrorAction Stop
+                Write-Host "$app has been uninstalled for all users."
+            }
+            catch {
+                Write-Host "Failed to uninstall $app."
+            }
         }
     }
     else {
         Write-Host "$app is not installed."
     }
 }
+
 
 try {
     Get-Command winget -ErrorAction Stop
@@ -145,6 +147,11 @@ if (-not (Test-Path $defaultVMfolder)) {
 # Run a Chris Titus Tech's Windows Utility as admin
 Start-Process powershell -Verb runAs -ArgumentList 'iwr -useb https://christitus.com/win | iex' -Wait
 
+If (!(Test-Path -Path "HKCU:\Software\Microsoft\Windows\CurrentVersion\Store\Settings")) {
+    # If not, create the key
+    New-Item -Path "HKCU:\Software\Microsoft\Windows\CurrentVersion\Store\Settings" -Force | Out-Null
+}
+
 # Customize Windows settings
 Set-ItemProperty -Path "HKCU:\SOFTWARE\Microsoft\Windows\CurrentVersion\Themes\Personalize" -Name "AppsUseLightTheme" -Value 0 -Force
 Set-ItemProperty -Path "HKCU:\SOFTWARE\Microsoft\Windows\CurrentVersion\Themes\Personalize" -Name "SystemUsesLightTheme" -Value 0 -Force
@@ -156,14 +163,15 @@ Set-ItemProperty -Path "HKCU:\SOFTWARE\Microsoft\Windows\CurrentVersion\Explorer
 Set-ItemProperty -Path "HKCU:\SOFTWARE\Microsoft\Windows\CurrentVersion\Explorer\Advanced" -Name "TaskbarMn" -Value 0 -Force
 Set-ItemProperty -Path "HKCU:\Software\Microsoft\Clipboard" -Name "EnableClipboardHistory" -Value 1 -Force
 Set-ItemProperty -Path "HKCU:\Control Panel\Accessibility\StickyKeys" -Name "Flags" -Value 506 -Force
+New-ItemProperty -Path "HKCU:\Software\Microsoft\Windows\CurrentVersion\Store\Settings" -Name "AutoDownload" -Value 2 -PropertyType "DWord" -Force | Out-Null
 
 # Set the power button behavior to do nothing
 powercfg -SETACVALUEINDEX SCHEME_CURRENT SUB_BUTTONS PBUTTONACTION 0
 
 # Set the sleep button behavior to do nothing
 powercfg -SETACVALUEINDEX SCHEME_CURRENT SUB_BUTTONS PSLEEPBUTTONACTION 0
-#set power plan
 
+#set power plan
 $planName = "Ultimate Performance"
 
 $guid = (powercfg /list | Where-Object { $_ -match $planName } | ForEach-Object { if ($_ -match '\((.*)\)') {$matches[1]} })
@@ -183,7 +191,6 @@ if (-not (Test-Path $wtSettings)) {
 }
 #replays file 
 Move-Item $PSScriptRoot\settings.json "$wtSettings\settings.json" -Force
-#set default terminal
 
 Start-Process Firefox
 Start-Sleep -Seconds 5
