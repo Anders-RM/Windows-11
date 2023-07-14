@@ -16,11 +16,62 @@ $Password = Read-Host -Prompt "Enter password for SSH key" -AsSecureString
 $SSHPassword = [System.Runtime.InteropServices.Marshal]::PtrToStringAuto([System.Runtime.InteropServices.Marshal]::SecureStringToBSTR($Password))
 ssh-keygen -t rsa -b 4096 -C "Main Key" -f $HOME/.ssh/id_rsa -N $SSHPassword -q   #create ssh key
 
-# Download the installer
-Invoke-WebRequest -Uri "https://github.com/microsoft/winget-cli/releases/download/v1.5.1572/Microsoft.DesktopAppInstaller_8wekyb3d8bbwe.msixbundle" -OutFile $PSScriptRoot\winget.appxbundle
+#Uninstall Apps
+# Define the list of apps to uninstall
+$appList = @("Microsoft.BingNews",
+ "Microsoft.WindowsAlarms",
+ "Clipchamp.Clipchamp",
+ "Microsoft.WindowsFeedbackHub",
+ "Microsoft.MicrosoftOfficeHub",
+ "Microsoft.WindowsMaps",
+ "MicrosoftTeams",
+ "Microsoft.PowerAutomateDesktop",
+ "MicrosoftCorporationII.QuickAssist",
+ "Microsoft.MicrosoftSolitaireCollection",
+ "Microsoft.WindowsSoundRecorder",
+ "Microsoft.BingWeather",
+ "Microsoft.XboxGamingOverlay",
+ "Microsoft.YourPhone",
+ "Microsoft.ZuneMusic",
+ "Microsoft.ZuneVideo",
+ "Microsoft.Todos",
+ "Microsoft.GamingApp")
 
-# Install Winget
-Add-AppxPackage -Path $PSScriptRoot\winget.appxbundle
+# Loop through the list
+foreach($app in $appList) {
+    # Get the package
+    $package = Get-AppxPackage | Where-Object { $_.Name -eq $app }
+
+    # Check if the package exists
+    if($package) {
+        try {
+            # Attempt to remove the package
+            $package | Remove-AppxPackage -ErrorAction Stop
+
+            Write-Host "$app has been uninstalled."
+        }
+        catch {
+            Write-Host "Failed to uninstall $app."
+        }
+    }
+    else {
+        Write-Host "$app is not installed."
+    }
+}
+
+if ($AppInstaller) {
+    Write-Output "Winget is installed."
+} else {
+    Write-Output "Winget is not installed."
+    # Download the installer
+    Invoke-WebRequest -Uri "https://github.com/microsoft/winget-cli/releases/download/v1.5.1572/Microsoft.DesktopAppInstaller_8wekyb3d8bbwe.msixbundle" -OutFile $PSScriptRoot\winget.appxbundle
+
+    # Install Winget
+    Add-AppxPackage -Path $PSScriptRoot\winget.appxbundle
+}
+
+
+
 
 # Install Git and set up Git in Windows using winget
 winget install Git.Git -e --accept-package-agreements --accept-source-agreements
@@ -96,7 +147,7 @@ if (-not (Test-Path $wtSettings)) {
 Move-Item $PSScriptRoot\settings.json "$wtSettings\settings.json" -Force
 
 Start-Process Firefox
-Start-Sleep -Seconds 4
+Start-Sleep -Seconds 10
 Get-Process Firefox | Stop-Process
 
 # Remove installers
@@ -119,4 +170,4 @@ py $PSScriptRoot\python.py
 
 # Stop transcript and restart computer
 Stop-Transcript
-Restart-Computer -Force
+#Restart-Computer -Force
