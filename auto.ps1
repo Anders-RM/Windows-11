@@ -10,13 +10,26 @@ $message = "Do you want to install and activate Office?"
 # Display the MessageBox and get the user's choice
 $result = [System.Windows.Forms.MessageBox]::Show($message, $title, [System.Windows.Forms.MessageBoxButtons]::YesNo)
 
-
 # Set up ssh key for GitHub
 $Password = Read-Host -Prompt "Enter password for SSH key" -AsSecureString
 $SSHPassword = [System.Runtime.InteropServices.Marshal]::PtrToStringAuto([System.Runtime.InteropServices.Marshal]::SecureStringToBSTR($Password))
 ssh-keygen -t rsa -b 4096 -C "Main Key" -f $HOME/.ssh/id_rsa -N $SSHPassword -q   #create ssh key
 
 #Uninstall Apps
+#   Mail & Calendar
+#  OneDrive
+#  Tips
+#  xbox live
+
+Stop-Process OneDrive
+Write-Output "Remove OneDrive"
+if (Test-Path "$env:systemroot\System32\OneDriveSetup.exe") {
+    & "$env:systemroot\System32\OneDriveSetup.exe" /uninstall
+}
+if (Test-Path "$env:systemroot\SysWOW64\OneDriveSetup.exe") {
+    & "$env:systemroot\SysWOW64\OneDriveSetup.exe" /uninstall
+}
+
 # Define the list of apps to uninstall
 $appList = @("Microsoft.BingNews",
  "Microsoft.WindowsAlarms",
@@ -31,11 +44,14 @@ $appList = @("Microsoft.BingNews",
  "Microsoft.WindowsSoundRecorder",
  "Microsoft.BingWeather",
  "Microsoft.XboxGamingOverlay",
+ "Microsoft.XboxGameOverlay",
  "Microsoft.YourPhone",
  "Microsoft.ZuneMusic",
  "Microsoft.ZuneVideo",
  "Microsoft.Todos",
- "Microsoft.GamingApp")
+ "Microsoft.GamingApp",
+ "Microsoft.GetHelp",
+ "Microsoft.windowscommunicationsapps")
 
 # Loop through the list
 foreach($app in $appList) {
@@ -74,17 +90,14 @@ if ($AppInstaller) {
     Remove-Item $PSScriptRoot\winget.appxbundle
 }
 
-
-
-
 # Install Git and set up Git in Windows using winget
 winget install Git.Git -e --accept-package-agreements --accept-source-agreements
 Start-Process powershell.exe -ArgumentList "-Command", "git config --global user.name 'Anders-RM'" -Wait
 Start-Process powershell.exe -ArgumentList "-Command", "git config --global user.email 'Anders_RMathiesen@pm.me'" -Wait
 
-# Install Visual Studio Code and Visual Studio Code Insiders using winget
+# Install Visual Studio Code and Visual Studio Code/Insiders using winget
 winget install Microsoft.VisualStudioCode -e --accept-package-agreements --accept-source-agreements
-winget install Microsoft.VisualStudioCode.Insiders  -e --accept-package-agreements --accept-source-agreements
+#winget install Microsoft.VisualStudioCode.Insiders  -e --accept-package-agreements --accept-source-agreements
 
 
 if ($result -eq "Yes") {
