@@ -85,11 +85,11 @@ foreach($app in $appList) {
     }
 }
 
-$AppInstaller = Get-AppxPackage Microsoft.DesktopAppInstaller
-
-if ($AppInstaller) {
+try {
+    Get-Command winget -ErrorAction Stop
     Write-Output "Winget is installed."
-} else {
+}
+catch {
     Write-Output "Winget is not installed."
     # Download the installer
     Invoke-WebRequest -Uri "https://github.com/microsoft/winget-cli/releases/download/v1.5.1572/Microsoft.DesktopAppInstaller_8wekyb3d8bbwe.msixbundle" -OutFile $PSScriptRoot\winget.appxbundle
@@ -140,6 +140,12 @@ if ($HyperVInstalled -ne 'Enabled') {
     Write-Host "Hyper-V installation complete."
 } else {
     Write-Host "Hyper-V is already installed."
+}
+
+$defaultVMfolder = "C:\VMs"
+
+if (-not (Test-Path $defaultVMfolder)) {
+    New-Item $defaultVMfolder -ItemType Directory -Force
 }
 
 # Run a Chris Titus Tech's Windows Utility as admin
