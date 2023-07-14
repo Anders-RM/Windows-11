@@ -13,14 +13,12 @@ $defaultChoice = 0
 
 $choiceResult = $host.ui.PromptForChoice($Title, $Prompt, $choices, $defaultChoice)
 
-
 # Set up ssh key for GitHub
 $Password = Read-Host -Prompt "Enter password for SSH key" -AsSecureString
 $SSHPassword = [System.Runtime.InteropServices.Marshal]::PtrToStringAuto([System.Runtime.InteropServices.Marshal]::SecureStringToBSTR($Password))
 ssh-keygen -t rsa -b 4096 -C "Main Key" -f $HOME/.ssh/id_rsa -N $SSHPassword -q   #create ssh key
 
 #Uninstall Apps
-
 Get-Process onedrive | Stop-Process -Force
 
 Write-Output "Remove OneDrive"
@@ -32,7 +30,6 @@ if (Test-Path "$env:windir\SysWOW64\OneDriveSetup.exe") {
     start-process "$env:windir\SysWOW64\OneDriveSetup.exe" /uninstall -Wait
     Write-Host "OneDrive64 has been uninstalled."
 }
-
 
 # Define the list of apps to uninstall
 $appList = @("Microsoft.BingNews",
@@ -104,10 +101,8 @@ winget install Git.Git -e --accept-package-agreements --accept-source-agreements
 Start-Process powershell.exe -ArgumentList "-Command", "git config --global user.name 'Anders-RM'" -Wait
 Start-Process powershell.exe -ArgumentList "-Command", "git config --global user.email 'Anders_RMathiesen@pm.me'" -Wait
 
-# Install Visual Studio Code and Visual Studio Code/Insiders using winget
+# Install Visual Studio Code using winget
 winget install Microsoft.VisualStudioCode -e --accept-package-agreements --accept-source-agreements
-#winget install Microsoft.VisualStudioCode.Insiders  -e --accept-package-agreements --accept-source-agreements
-
 
 if ($choiceResult -eq $defaultChoice) {
     # Download and install Office 365 from Microsoft
@@ -167,6 +162,17 @@ powercfg -SETACVALUEINDEX SCHEME_CURRENT SUB_BUTTONS PBUTTONACTION 0
 
 # Set the sleep button behavior to do nothing
 powercfg -SETACVALUEINDEX SCHEME_CURRENT SUB_BUTTONS PSLEEPBUTTONACTION 0
+#set power plan
+
+$planName = "Ultimate Performance"
+
+$guid = (powercfg /list | Where-Object { $_ -match $planName } | ForEach-Object { if ($_ -match '\((.*)\)') {$matches[1]} })
+
+if ($null -ne $guid) {
+    powercfg /setactive $guid
+    Write-Host "Power plan changed to $planName"
+}
+
 
 # Restart explorer.exe
 Stop-Process -Name explorer
@@ -177,6 +183,7 @@ if (-not (Test-Path $wtSettings)) {
 }
 #replays file 
 Move-Item $PSScriptRoot\settings.json "$wtSettings\settings.json" -Force
+#set default terminal
 
 Start-Process Firefox
 Start-Sleep -Seconds 5
@@ -184,7 +191,6 @@ Get-Process Firefox | Stop-Process
 
 # Remove installers
 Remove-Item $PSScriptRoot\python.exe
-
 
 # Move AfterReboot.ps1 to downloads folder
 Move-Item $PSScriptRoot\AfterReboot.ps1 $HOME\downloads\AfterReboot.ps1
