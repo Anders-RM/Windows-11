@@ -27,11 +27,11 @@ Get-Process onedrive | Stop-Process -Force
 
 Write-Output "Remove OneDrive"
 if (Test-Path "$env:windir\System32\OneDriveSetup.exe") {
-    start-process "$env:windir\System32\OneDriveSetup.exe" /uninstall
+    start-process "$env:windir\System32\OneDriveSetup.exe" /uninstall -Wait
     Write-Host "OneDrive32 has been uninstalled."
 }
 if (Test-Path "$env:windir\SysWOW64\OneDriveSetup.exe") {
-    start-process "$env:windir\SysWOW64\OneDriveSetup.exe" /uninstall
+    start-process "$env:windir\SysWOW64\OneDriveSetup.exe" /uninstall -Wait
     Write-Host "OneDrive64 has been uninstalled."
 }
 
