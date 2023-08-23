@@ -14,13 +14,13 @@ $nugetPath = "$PSScriptRoot\NuGet.exe"
 $wtSettings = "$HOME\AppData\Local\Packages\Microsoft.WindowsTerminal_8wekyb3d8bbwe\LocalState"
 $winBitVersion = (Get-CimInstance Win32_OperatingSystem).OSArchitecture
 switch ($winBitVersion) {
-    '64-bit' { $opArch = 'amd64'; break }
-    '32-bit' { $opArch = '386'; break }
+    '64-bit' { $winBitVersion = 'amd64'; break }
+    '32-bit' { $winBitVersion = '386'; break }
     Default { Write-Error "Sorry, your operating system architecture '$winBitVersion' is unsupported" -ErrorAction Stop }
 }
 
 $1Passowrdurl = "https://downloads.1password.com/win/1PasswordSetup-latest.exe"
-$1Passowrdcliurl = "https://cache.agilebits.com/dist/1P/op2/pkg/v2.19.0-beta.01/op_windows_$($opArch)_v2_v2.19.0-beta.01.zip"
+$1Passowrdcliurl = "https://cache.agilebits.com/dist/1P/op2/pkg/v2.19.0-beta.01/op_windows_$($winBitVersion)_v2_v2.19.0-beta.01.zip"
 
 
 
