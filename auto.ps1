@@ -269,11 +269,10 @@ switch ($arch) {
     '32-bit' { $opArch = '386'; break }
     Default { Write-Error "Sorry, your operating system architecture '$arch' is unsupported" -ErrorAction Stop }
 }
-Write-Output "$arch"
-Read-Host -Prompt "Press any key to continue. . ."
+
 
 $installDir = Join-Path -Path $env:ProgramFiles -ChildPath '1Password CLI'
-Start-BitsTransfer -Source -Uri "https://cache.agilebits.com/dist/1P/op2/pkg/v2.19.0-beta.01/op_windows_$($opArch)_v2.19.0-beta.01.zip" -Destination $PSScriptRoot\op.zip 
+Start-BitsTransfer -Source "https://cache.agilebits.com/dist/1P/op2/pkg/v2.19.0-beta.01/op_windows_$($opArch)_v2.19.0-beta.01.zip" -Destination $PSScriptRoot\op.zip 
 Expand-Archive -Path $PSScriptRoot\op.zip -DestinationPath $installDir -Force
 $envMachinePath = [System.Environment]::GetEnvironmentVariable('PATH','machine')
 if ($envMachinePath -split ';' -notcontains $installDir){
