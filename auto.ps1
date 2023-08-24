@@ -23,7 +23,6 @@ $1Passowrdurl = "https://downloads.1password.com/win/1PasswordSetup-latest.exe"
 $1Passowrdcliurl = "https://cache.agilebits.com/dist/1P/op2/pkg/v2.19.0-beta.01/op_windows_$($winBitVersion)_v2_v2.19.0-beta.01.zip"
 
 
-
 Remove-Item -Path "HKCU:\Software\Microsoft\Windows\CurrentVersion\Run\*" -Recurse
 Remove-Item -Path "HKCU:\Software\Microsoft\Windows\CurrentVersion\RunOnce\*" -Recurse
 Remove-Item -Path "HKLM:\Software\Microsoft\Windows\CurrentVersion\Run\*" -Recurse
