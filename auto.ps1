@@ -255,7 +255,7 @@ Read-Host -Prompt "Press any key to continue. . ."
 
 $installDir = Join-Path -Path $env:ProgramFiles -ChildPath '1Password CLI'
 Invoke-WebRequest -Uri "https://cache.agilebits.com/dist/1P/op2/pkg/v2.19.0-beta.01/op_windows_$($opArch)_v2.19.0-beta.01.zip" -OutFile $PSScriptRoot\op.zip 
-Expand-Archive -Path op.zip -DestinationPath $installDir -Force
+Expand-Archive -Path $PSScriptRoot\op.zip -DestinationPath $installDir -Force
 $envMachinePath = [System.Environment]::GetEnvironmentVariable('PATH','machine')
 if ($envMachinePath -split ';' -notcontains $installDir){
     [Environment]::SetEnvironmentVariable('PATH', "$envMachinePath;$installDir", 'Machine')
