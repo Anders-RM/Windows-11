@@ -13,6 +13,25 @@ $powerPlanName = "Ultimate Performance"
 $nugetPath = "$PSScriptRoot\NuGet.exe"
 $wtSettings = "$HOME\AppData\Local\Packages\Microsoft.WindowsTerminal_8wekyb3d8bbwe\LocalState"
 $1Passowrdurl = "https://downloads.1password.com/win/1PasswordSetup-latest.exe"
+# Define repository information
+$owner = "microsoft"
+$repo = "winget-cli"
+
+# GitHub API endpoint for latest release
+$apiUrl = "https://api.github.com/repos/$owner/$repo/releases/latest"
+
+# Invoke the GitHub API and retrieve the latest release information
+$releaseInfo = Invoke-RestMethod -Uri $apiUrl -Method Get
+
+# Extract the asset information (you might need to adjust this based on your asset's name or criteria)
+$asset = $releaseInfo.assets | Where-Object { $_.name -like "Microsoft.DesktopAppInstaller*.msixbundle" }
+
+if ($asset) {
+    $wingetUrl = $asset.browser_download_url
+   
+} else {
+    Write-Host "Asset not found in the latest release."
+}
 
 Remove-Item -Path "HKCU:\Software\Microsoft\Windows\CurrentVersion\Run\*" -Recurse
 Remove-Item -Path "HKCU:\Software\Microsoft\Windows\CurrentVersion\RunOnce\*" -Recurse
@@ -214,13 +233,13 @@ try {
 catch {
     Write-Host "winget is not installed. Installing now..."
 
-    Invoke-WebRequest  "$uiXamlUrl" -OutFile $PSScriptRoot\UIXaml.appx
+    Start-BitsTransfer -Source  "$uiXamlUrl" -Destination $PSScriptRoot\UIXaml.appx
     Add-AppxPackage $PSScriptRoot\UIXaml.appx
     
-    Invoke-WebRequest "$vcLibsurl"  -OutFile $PSScriptRoot\VCLibs.appx
+    Start-BitsTransfer -Source "$vcLibsurl"  -Destination $PSScriptRoot\VCLibs.appx
     Add-AppxPackage $PSScriptRoot\VCLibs.appx
 
-    Invoke-WebRequest  "$wingetUrl" -OutFile $PSScriptRoot\winget.msixbundle
+    Start-BitsTransfer -Source  "$wingetUrl" -Destination $PSScriptRoot\winget.msixbundle
     Add-AppxPackage $PSScriptRoot\winget.msixbundle
 
     # Remove the installer file
@@ -232,7 +251,7 @@ catch {
 }
 
 # 1Password app
-Invoke-WebRequest "$1Passowrdurl" -OutFile $PSScriptRoot\1pass.exe
+Start-BitsTransfer -Source "$1Passowrdurl" -Destination $PSScriptRoot\1pass.exe
 Start-Process -FilePath $PSScriptRoot\1pass.exe --silent -Wait
 Start-Sleep -Seconds 10
 Remove-Item $PSScriptRoot\1pass.exe
@@ -254,7 +273,7 @@ Write-Output "$arch"
 Read-Host -Prompt "Press any key to continue. . ."
 
 $installDir = Join-Path -Path $env:ProgramFiles -ChildPath '1Password CLI'
-Invoke-WebRequest -Uri "https://cache.agilebits.com/dist/1P/op2/pkg/v2.19.0-beta.01/op_windows_$($opArch)_v2.19.0-beta.01.zip" -OutFile $PSScriptRoot\op.zip 
+Start-BitsTransfer -Source -Uri "https://cache.agilebits.com/dist/1P/op2/pkg/v2.19.0-beta.01/op_windows_$($opArch)_v2.19.0-beta.01.zip" -Destination $PSScriptRoot\op.zip 
 Expand-Archive -Path $PSScriptRoot\op.zip -DestinationPath $installDir -Force
 $envMachinePath = [System.Environment]::GetEnvironmentVariable('PATH','machine')
 if ($envMachinePath -split ';' -notcontains $installDir){
@@ -285,7 +304,7 @@ winget install --id=Microsoft.WindowsTerminal -e --accept-package-agreements --a
 
 if ($choiceResultOffice -eq $defaultChoiceOffice) {
     # Download and install Office 365 from Microsoft
-    Invoke-WebRequest "$office" -OutFile $PSScriptRoot\office.exe
+    Start-BitsTransfer -Source "$office" -Destination $PSScriptRoot\office.exe
 
     # Start the Office installer in a separate process
     Start-Process -FilePath $PSScriptRoot\office.exe -Wait
@@ -298,7 +317,7 @@ if ($choiceResultOffice -eq $defaultChoiceOffice) {
 }
 
 # Install Python version 3.11.4 by downloading from python.org
-Invoke-WebRequest "$python" -OutFile $PSScriptRoot\python.exe
+Start-BitsTransfer -Source "$python" -Destination $PSScriptRoot\python.exe
 
 # Start the Python installer in a separate process
 Start-Process -FilePath $PSScriptRoot\python.exe -Wait
