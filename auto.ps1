@@ -280,8 +280,9 @@ if ($envMachinePath -split ';' -notcontains $installDir){
 }
 Remove-Item -Path $PSScriptRoot\op.zip
 
-Write-Output 'Enable CLI integration under the developer settings and make sure the CLI integration has access to 1password vault use the command "op vault list".'
+Write-Output 'Enable CLI integration under the developer settings and make sure the CLI integration has access to 1password vault make sure 1password is runig use the command "op vault list".'
 Read-Host -Prompt "Press any key to continue. . ."
+# run in new termiall 
 
 $sshKey = op ssh generate --title "$env:computername" --fields "label=public key"
 $modifiedsshKey = $sshKey.Replace("`r`n", "")
