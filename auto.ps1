@@ -12,16 +12,7 @@ $defaultVMfolder = "C:\VMs"
 $powerPlanName = "Ultimate Performance"
 $nugetPath = "$PSScriptRoot\NuGet.exe"
 $wtSettings = "$HOME\AppData\Local\Packages\Microsoft.WindowsTerminal_8wekyb3d8bbwe\LocalState"
-$winBitVersion = (Get-CimInstance Win32_OperatingSystem).OSArchitecture
-switch ($winBitVersion) {
-    '64-bit' { $winBitVersion = 'amd64'; break }
-    '32-bit' { $winBitVersion = '386'; break }
-    Default { Write-Error "Sorry, your operating system architecture '$winBitVersion' is unsupported" -ErrorAction Stop }
-}
-
 $1Passowrdurl = "https://downloads.1password.com/win/1PasswordSetup-latest.exe"
-$1Passowrdcliurl = "https://cache.agilebits.com/dist/1P/op2/pkg/v2.19.0-beta.01/op_windows_$($winBitVersion)_v2_v2.19.0-beta.01.zip"
-
 
 Remove-Item -Path "HKCU:\Software\Microsoft\Windows\CurrentVersion\Run\*" -Recurse
 Remove-Item -Path "HKCU:\Software\Microsoft\Windows\CurrentVersion\RunOnce\*" -Recurse
@@ -253,9 +244,15 @@ Read-Host -Prompt "Press any key to continue. . ."
 Get-Process 1Password | Stop-Process
 
 # 1Password CLI
+$arch = (Get-CimInstance Win32_OperatingSystem).OSArchitecture
+switch ($arch) {
+    '64-bit' { $opArch = 'amd64'; break }
+    '32-bit' { $opArch = '386'; break }
+    Default { Write-Error "Sorry, your operating system architecture '$arch' is unsupported" -ErrorAction Stop }
+}
 $installDir = Join-Path -Path $env:ProgramFiles -ChildPath '1Password CLI'
-Invoke-WebRequest -Uri "$1Passowrdcliurl" -OutFile $PSScriptRoot\op.zip
-Expand-Archive -Path $PSScriptRoot\op.zip -DestinationPath $installDir -Force
+Invoke-WebRequest -Uri "https://cache.agilebits.com/dist/1P/op2/pkg/v2.19.0-beta.01/op_windows_$($opArch)_v2.19.0-beta.01.zip" -OutFile $PSScriptRoot\op.zip 
+Expand-Archive -Path op.zip -DestinationPath $installDir -Force
 $envMachinePath = [System.Environment]::GetEnvironmentVariable('PATH','machine')
 if ($envMachinePath -split ';' -notcontains $installDir){
     [Environment]::SetEnvironmentVariable('PATH', "$envMachinePath;$installDir", 'Machine')
