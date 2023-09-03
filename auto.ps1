@@ -301,6 +301,8 @@ git config --global commit.gpgsign 'true'
 winget install --id=Microsoft.VisualStudioCode -e --accept-package-agreements --accept-source-agreements
 winget install --id=M2Team.NanaZip -e --accept-package-agreements --accept-source-agreements
 winget install --id=Microsoft.WindowsTerminal -e --accept-package-agreements --accept-source-agreements
+winget install --id=Microsoft.PowerToys -e --accept-package-agreements --accept-source-agreements
+
 
 if ($choiceResultOffice -eq $defaultChoiceOffice) {
     # Download and install Office 365 from Microsoft
