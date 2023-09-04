@@ -285,6 +285,7 @@ Read-Host -Prompt "Press any key to continue. . ."
 
 winget install Git.Git -e --accept-package-agreements --accept-source-agreements
 # run in new termiall 
+# add date to key --title
 
 $sshKey = op ssh generate --title "$env:computername" --fields "label=public key"
 $modifiedsshKey = $sshKey.Replace("`r`n", "")
