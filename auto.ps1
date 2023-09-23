@@ -316,7 +316,7 @@ $commands = @(
 $commandString = $commands -join ";"
 
 # Start a new PowerShell process with the commands
-Start-Process powershell.exe -ArgumentList "-NoExit", "-Command $commandString"
+Start-Process powershell.exe -ArgumentList "-NoExit", "-Command $commandString" -Wait
 
 
 # Install Programs using winget
