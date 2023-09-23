@@ -279,7 +279,7 @@ if ($envMachinePath -split ';' -notcontains $installDir){
     [Environment]::SetEnvironmentVariable('PATH', "$envMachinePath;$installDir", 'Machine')
 }
 Remove-Item -Path $PSScriptRoot\op.zip
-
+Start-Process 1Password
 Write-Output 'Enable CLI integration under the developer settings and make sure the CLI integration has access to 1password vault make sure 1password is runig use the command "op vault list".'
 Read-Host -Prompt "Press any key to continue. . ."
 
@@ -297,22 +297,8 @@ winget install Git.Git -e --accept-package-agreements --accept-source-agreements
 # git config --global gpg.ssh.program $env:LOCALAPPDATA\1Password\app\8\op-ssh-sign.exe
 # git config --global commit.gpgsign 'true'
 
+& $PSScriptRoot\SshKeyForGit.ps1
 
-# Define your PowerShell commands in an array of strings
-$commands = @(
-    "op ssh generate --title '$env:computername' --fields 'label=public key'",
-    "$sshKey = op ssh generate --title '$env:computername' --fields 'label=public key'",
-    "$modifiedsshKey = $sshKey.Replace('`r`n', '')",
-    "$modifiedsshKey = $modifiedsshKey.Replace('`"', '')",
-    "git config --global user.signingkey $modifiedsshKey",
-    "git config --global user.name 'Anders-RM'",
-    "git config --global user.email 'Anders_RMathiesen@pm.me'",
-    "git config --global gpg.format 'ssh'",
-    "git config --global gpg.ssh.program '$env:LOCALAPPDATA\\1Password\\app\\8\\op-ssh-sign.exe'",
-    "git config --global commit.gpgsign 'true'"
-)
-
-# Join the commands into a single string with semicolons as separators
 $commandString = $commands -join ";"
 
 # Start a new PowerShell process with the commands
