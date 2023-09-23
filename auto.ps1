@@ -299,7 +299,6 @@ winget install Git.Git -e --accept-package-agreements --accept-source-agreements
 
 & $PSScriptRoot\SshKeyForGit.ps1
 
-$commandString = $commands -join ";"
 
 # Start a new PowerShell process with the commands
 Start-Process powershell.exe -ArgumentList "-NoExit", "-Command $commandString" -Wait
