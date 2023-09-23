@@ -287,15 +287,36 @@ winget install Git.Git -e --accept-package-agreements --accept-source-agreements
 # run in new termiall 
 # add date to key --title
 
-$sshKey = op ssh generate --title "$env:computername" --fields "label=public key"
-$modifiedsshKey = $sshKey.Replace("`r`n", "")
-$modifiedsshKey = $modifiedsshKey.Replace("""", "")
-git config --global user.signingkey $modifiedsshKey
-git config --global user.name 'Anders-RM'
-git config --global user.email 'Anders_RMathiesen@pm.me'
-git config --global gpg.format 'ssh'
-git config --global gpg.ssh.program $env:LOCALAPPDATA\1Password\app\8\op-ssh-sign.exe
-git config --global commit.gpgsign 'true'
+# $sshKey = op ssh generate --title "$env:computername" --fields "label=public key"
+# $modifiedsshKey = $sshKey.Replace("`r`n", "")
+# $modifiedsshKey = $modifiedsshKey.Replace("""", "")
+# git config --global user.signingkey $modifiedsshKey
+# git config --global user.name 'Anders-RM'
+# git config --global user.email 'Anders_RMathiesen@pm.me'
+# git config --global gpg.format 'ssh'
+# git config --global gpg.ssh.program $env:LOCALAPPDATA\1Password\app\8\op-ssh-sign.exe
+# git config --global commit.gpgsign 'true'
+
+
+# Define your PowerShell commands in an array of strings
+$commands = @(
+    "op ssh generate --title '$env:computername' --fields 'label=public key'",
+    "$sshKey = op ssh generate --title '$env:computername' --fields 'label=public key'",
+    "$modifiedsshKey = $sshKey.Replace('`r`n', '')",
+    "$modifiedsshKey = $modifiedsshKey.Replace('`"', '')",
+    "git config --global user.signingkey $modifiedsshKey",
+    "git config --global user.name 'Anders-RM'",
+    "git config --global user.email 'Anders_RMathiesen@pm.me'",
+    "git config --global gpg.format 'ssh'",
+    "git config --global gpg.ssh.program '$env:LOCALAPPDATA\\1Password\\app\\8\\op-ssh-sign.exe'",
+    "git config --global commit.gpgsign 'true'"
+)
+
+# Join the commands into a single string with semicolons as separators
+$commandString = $commands -join ";"
+
+# Start a new PowerShell process with the commands
+Start-Process powershell.exe -ArgumentList "-NoExit", "-Command $commandString"
 
 
 # Install Programs using winget
