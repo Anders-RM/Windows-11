@@ -1,3 +1,4 @@
+# add date to key --title
 $sshKey = op ssh generate --title "$env:computername" --fields "label=public key"
 $modifiedsshKey = $sshKey.Replace("`r`n", "")
 $modifiedsshKey = $modifiedsshKey.Replace("""", "")
