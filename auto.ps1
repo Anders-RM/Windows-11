@@ -305,8 +305,7 @@ Read-Host -Prompt "Press any key to continue. . ."
 
 winget install Git.Git -e --accept-package-agreements --accept-source-agreements
 
-#in new instens
-& $PSScriptRoot\SshKeyForGit.ps1
+Start-Process powershell.exe -ArgumentList "-ExecutionPolicy Bypass -File $PSScriptRoot\SshKeyForGit.ps1"
 
 
 # Start a new PowerShell process with the commands
