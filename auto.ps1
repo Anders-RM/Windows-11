@@ -14,23 +14,43 @@ $nugetPath = "$PSScriptRoot\NuGet.exe"
 $wtSettings = "$HOME\AppData\Local\Packages\Microsoft.WindowsTerminal_8wekyb3d8bbwe\LocalState"
 $1Passowrdurl = "https://downloads.1password.com/win/1PasswordSetup-latest.exe"
 # Define repository information
-$owner = "microsoft"
-$repo = "winget-cli"
+$wingetowner = "microsoft"
+$wingetrepo = "winget-cli"
 
 # GitHub API endpoint for latest release
-$apiUrl = "https://api.github.com/repos/$owner/$repo/releases/latest"
+$wingetapiUrl = "https://api.github.com/repos/$wingetowner/$wingetrepo/releases/latest"
 
 # Invoke the GitHub API and retrieve the latest release information
-$releaseInfo = Invoke-RestMethod -Uri $apiUrl -Method Get
+$wingetreleaseInfo = Invoke-RestMethod -Uri $wingetapiUrl -Method Get
 
 # Extract the asset information (you might need to adjust this based on your asset's name or criteria)
-$asset = $releaseInfo.assets | Where-Object { $_.name -like "Microsoft.DesktopAppInstaller*.msixbundle" }
+$wingetasset = $wingetreleaseInfo.assets | Where-Object { $_.name -like "Microsoft.DesktopAppInstaller*.msixbundle" }
 
-if ($asset) {
-    $wingetUrl = $asset.browser_download_url
+if ($wingetasset) {
+    $wingetUrl = $wingetasset.browser_download_url
    
 } else {
     Write-Host "Asset not found in the latest release."
+}
+
+# Define repository information
+$thorium_owner = "Alex313031"
+$thorium_repo = "Thorium-Win"
+
+# GitHub API endpoint for latest release
+$thorium_apiUrl = "https://api.github.com/repos/$thorium_owner/$thorium_repo/releases/latest"
+
+# Invoke the GitHub API and retrieve the latest release information
+$thorium_releaseInfo = Invoke-RestMethod -Uri $thorium_apiUrl -Method Get
+
+# Extract the asset information (you might need to adjust this based on your asset's name or criteria)
+$thorium_asset = $thorium_releaseInfo.assets | Where-Object { $_.name -like "thorium_*.exe" }
+
+if ($thorium_asset) {
+$thorium_Url = $thorium_asset.browser_download_url
+
+} else {
+Write-Host "Asset not found in the latest release."
 }
 
 Remove-Item -Path "HKCU:\Software\Microsoft\Windows\CurrentVersion\Run\*" -Recurse
@@ -47,43 +67,43 @@ Set-Culture -CultureInfo "en-DK"
 # Check if NuGet is installed
 if ($null -ne (Get-PackageProvider -ListAvailable | Where-Object { $_.Name -eq "NuGet" }))
 {
-    Write-Host "NuGet is already installed."
+Write-Host "NuGet is already installed."
 }
 else
 {
-    # Install NuGet if it's not already installed
-    try
-    {
-        Install-PackageProvider -Name NuGet -Force
-        Import-PackageProvider NuGet -Force
+# Install NuGet if it's not already installed
+try
+{
+    Install-PackageProvider -Name NuGet -Force
+    Import-PackageProvider NuGet -Force
 
-        # Check if NuGet exists
-        if (!(Test-Path $nugetPath)) {
-            # NuGet doesn't exist, so download it
-            $webClient = New-Object System.Net.WebClient
-            try {
-                $webClient.DownloadFile($nugetUrl, $nugetPath)
-            }
-            catch {
-                Write-Host "Failed to download NuGet from $nugetUrl to $nugetPath."
-                Write-Host $_.Exception.Message
-            }
+    # Check if NuGet exists
+    if (!(Test-Path $nugetPath)) {
+        # NuGet doesn't exist, so download it
+        $webClient = New-Object System.Net.WebClient
+        try {
+            $webClient.DownloadFile($nugetUrl, $nugetPath)
         }
+        catch {
+            Write-Host "Failed to download NuGet from $nugetUrl to $nugetPath."
+            Write-Host $_.Exception.Message
+        }
+    }
 
-        
-        Write-Host "NuGet has been installed."
-    }
-    catch
-    {
-        Write-Host "Failed to install NuGet."
-        Write-Host $_.Exception.Message
-    }
+    
+    Write-Host "NuGet has been installed."
+}
+catch
+{
+    Write-Host "Failed to install NuGet."
+    Write-Host $_.Exception.Message
+}
 }
 
 # Check if the PowerShellGet module is installed
 if (!(Get-Module -ListAvailable -Name PowerShellGet)) {
-    # If not, install it
-    Install-Module -Name PowerShellGet -Force -AllowClobber
+# If not, install it
+Install-Module -Name PowerShellGet -Force -AllowClobber
 }
 
 # Set the installation policy for the PSGallery repository
@@ -93,8 +113,8 @@ $PromptBackup = "Do you want to activate backup?"
 $TitleBackup = "Set up backup task schedule"
 
 $choicesBackup = [System.Management.Automation.Host.ChoiceDescription[]]@(
-    (New-Object System.Management.Automation.Host.ChoiceDescription -ArgumentList '&Yes'),
-    (New-Object System.Management.Automation.Host.ChoiceDescription -ArgumentList '&No')
+(New-Object System.Management.Automation.Host.ChoiceDescription -ArgumentList '&Yes'),
+(New-Object System.Management.Automation.Host.ChoiceDescription -ArgumentList '&No')
 )
 
 $defaultChoiceBackup = 0
@@ -105,35 +125,35 @@ $PromptPswu = "Do you want to install Windows Update"
 $TitlePswu = "Windows Update"
 
 $choicesPswu = [System.Management.Automation.Host.ChoiceDescription[]]@(
-    (New-Object System.Management.Automation.Host.ChoiceDescription -ArgumentList '&Yes'),
-    (New-Object System.Management.Automation.Host.ChoiceDescription -ArgumentList '&No')
+(New-Object System.Management.Automation.Host.ChoiceDescription -ArgumentList '&Yes'),
+(New-Object System.Management.Automation.Host.ChoiceDescription -ArgumentList '&No')
 )
 
 $defaultChoicePswu = 0
 
 $choiceResultPswu = $host.ui.PromptForChoice($TitlePswu, $PromptPswu, $choicesPswu, $defaultChoicePswu)
-    # Install and Import the PSWindowsUpdate module
-    Install-Module PSWindowsUpdate
-    Import-Module PSWindowsUpdate
+# Install and Import the PSWindowsUpdate module
+Install-Module PSWindowsUpdate
+Import-Module PSWindowsUpdate
 
 $PromptOffice = "Do you want to install and activate Office?"
 $TitleOffice = "Office Installation"
 
 $choicesOffice = [System.Management.Automation.Host.ChoiceDescription[]]@(
-    (New-Object System.Management.Automation.Host.ChoiceDescription -ArgumentList '&Yes'),
-    (New-Object System.Management.Automation.Host.ChoiceDescription -ArgumentList '&No')
+(New-Object System.Management.Automation.Host.ChoiceDescription -ArgumentList '&Yes'),
+(New-Object System.Management.Automation.Host.ChoiceDescription -ArgumentList '&No')
 )
 
 $defaultChoiceOffice = 1
 
 $choiceResultOffice = $host.ui.PromptForChoice($TitleOffice, $PromptOffice, $choicesOffice, $defaultChoiceOffice)
 
-$Promptwinget = "Do you want to install Firefox & Brave using winget?"
-$Titlewinget = "Firefox/Brave Installation"
+$Promptwinget = "Do you want to install Firefox & Thorium using winget?"
+$Titlewinget = "Firefox/Thorium Installation"
 
 $choiceswinget = [System.Management.Automation.Host.ChoiceDescription[]]@(
-    (New-Object System.Management.Automation.Host.ChoiceDescription -ArgumentList '&Yes'),
-    (New-Object System.Management.Automation.Host.ChoiceDescription -ArgumentList '&No')
+(New-Object System.Management.Automation.Host.ChoiceDescription -ArgumentList '&Yes'),
+(New-Object System.Management.Automation.Host.ChoiceDescription -ArgumentList '&No')
 )
 
 $defaultChoicewinget = 0
@@ -141,12 +161,12 @@ $defaultChoicewinget = 0
 $choiceResultwinget = $host.ui.PromptForChoice($Titlewinget, $Promptwinget, $choiceswinget, $defaultChoicewinget)
 
 if ($choiceResultPswu -eq $defaultChoicePswu) {
-    # Get the available updates.
-    Write-Host "Get the available Windows Update"
-    Get-WindowsUpdate | Out-File "$PSScriptRoot\$(get-date -f yyyy-MM-dd)_Get-WindowsUpdate.log" -force
-    # Install all the updates.
-    Write-Host "Install all the updates"
-    Install-WindowsUpdate -AcceptAll -Install -IgnoreReboot | Out-File "$PSScriptRoot\$(get-date -f yyyy-MM-dd)_Install-WindowsUpdate.log" -force
+# Get the available updates.
+Write-Host "Get the available Windows Update"
+Get-WindowsUpdate | Out-File "$PSScriptRoot\$(get-date -f yyyy-MM-dd)_Get-WindowsUpdate.log" -force
+# Install all the updates.
+Write-Host "Install all the updates"
+Install-WindowsUpdate -AcceptAll -Install -IgnoreReboot | Out-File "$PSScriptRoot\$(get-date -f yyyy-MM-dd)_Install-WindowsUpdate.log" -force
 }
 
 #Uninstall Apps
@@ -154,100 +174,100 @@ Get-Process onedrive | Stop-Process -Force
 
 Write-Output "Remove OneDrive"
 if (Test-Path "$env:windir\System32\OneDriveSetup.exe") {
-    start-process "$env:windir\System32\OneDriveSetup.exe" /uninstall -Wait
-    Write-Host "OneDrive32 has been uninstalled."
+start-process "$env:windir\System32\OneDriveSetup.exe" /uninstall -Wait
+Write-Host "OneDrive32 has been uninstalled."
 }
 if (Test-Path "$env:windir\SysWOW64\OneDriveSetup.exe") {
-    start-process "$env:windir\SysWOW64\OneDriveSetup.exe" /uninstall -Wait
-    Write-Host "OneDrive64 has been uninstalled."
+start-process "$env:windir\SysWOW64\OneDriveSetup.exe" /uninstall -Wait
+Write-Host "OneDrive64 has been uninstalled."
 }
 
 # Define the list of apps to uninstall
 
 $appList = @("Microsoft.BingNews",
- "Microsoft.WindowsAlarms",
- "Clipchamp.Clipchamp",
- "Microsoft.WindowsFeedbackHub",
- "Microsoft.MicrosoftOfficeHub",
- "Microsoft.WindowsMaps",
- "MicrosoftTeams",
- "Microsoft.PowerAutomateDesktop",
- "MicrosoftCorporationII.QuickAssist",
- "Microsoft.MicrosoftSolitaireCollection",
- "Microsoft.WindowsSoundRecorder",
- "Microsoft.BingWeather",
- "Microsoft.XboxGamingOverlay",
- "Microsoft.XboxGameOverlay",
- "Microsoft.Xbox.TCUI",
- "Microsoft.XboxSpeechToTextOverlay",
- "Microsoft.XboxIdentityProvider",
- "Microsoft.YourPhone",
- "Microsoft.ZuneMusic",
- "Microsoft.ZuneVideo",
- "Microsoft.Todos",
- "Microsoft.GamingApp",
- "Microsoft.GetHelp",
- "Microsoft.Getstarted",
- "Microsoft.windowscommunicationsapps")
+"Microsoft.WindowsAlarms",
+"Clipchamp.Clipchamp",
+"Microsoft.WindowsFeedbackHub",
+"Microsoft.MicrosoftOfficeHub",
+"Microsoft.WindowsMaps",
+"MicrosoftTeams",
+"Microsoft.PowerAutomateDesktop",
+"MicrosoftCorporationII.QuickAssist",
+"Microsoft.MicrosoftSolitaireCollection",
+"Microsoft.WindowsSoundRecorder",
+"Microsoft.BingWeather",
+"Microsoft.XboxGamingOverlay",
+"Microsoft.XboxGameOverlay",
+"Microsoft.Xbox.TCUI",
+"Microsoft.XboxSpeechToTextOverlay",
+"Microsoft.XboxIdentityProvider",
+"Microsoft.YourPhone",
+"Microsoft.ZuneMusic",
+"Microsoft.ZuneVideo",
+"Microsoft.Todos",
+"Microsoft.GamingApp",
+"Microsoft.GetHelp",
+"Microsoft.Getstarted",
+"Microsoft.windowscommunicationsapps")
 
 foreach($app in $appList) {
-    # Get the package
-    $package = Get-AppxPackage -AllUsers | Where-Object { $_.Name -eq $app }
+# Get the package
+$package = Get-AppxPackage -AllUsers | Where-Object { $_.Name -eq $app }
 
-    # Check if the package exists
-    if($package) {
-        foreach($package in $package){
-            try {
-                # Attempt to remove the package for all users
-                Remove-AppxPackage -package $package.PackageFullName -AllUsers -ErrorAction Stop
-                Write-Host "$app has been uninstalled for all users."
-            }
-            catch {
-                Write-Host "Failed to uninstall $app."
-            }
+# Check if the package exists
+if($package) {
+    foreach($package in $package){
+        try {
+            # Attempt to remove the package for all users
+            Remove-AppxPackage -package $package.PackageFullName -AllUsers -ErrorAction Stop
+            Write-Host "$app has been uninstalled for all users."
+        }
+        catch {
+            Write-Host "Failed to uninstall $app."
         }
     }
-    else {
-        Write-Host "$app is not installed."
-    }
+}
+else {
+    Write-Host "$app is not installed."
+}
 }
 
 # Check if Windows Store is installed
 $storeApp = Get-AppxPackage -Name Microsoft.WindowsStore -ErrorAction SilentlyContinue
 
 if ($null -eq $storeApp) {
-    # Windows Store is not installed, so install it (this might require administrative privileges)
-    wsreset -i
-    Get-AppxPackage -allusers Microsoft.WindowsStore | ForEach-Object {Add-AppxPackage -DisableDevelopmentMode -Register “$($_.InstallLocation)\AppXManifest.xml”}
-    Write-Host "Windows Store has been installed."
+# Windows Store is not installed, so install it (this might require administrative privileges)
+wsreset -i
+Get-AppxPackage -allusers Microsoft.WindowsStore | ForEach-Object {Add-AppxPackage -DisableDevelopmentMode -Register “$($_.InstallLocation)\AppXManifest.xml”}
+Write-Host "Windows Store has been installed."
 } else {
-    Write-Host "Windows Store is already installed."
+Write-Host "Windows Store is already installed."
 }
 
 
 # Test if winget is installed
 try {
-    $winget = Get-Command winget -ErrorAction Stop
-    Write-Host "winget is already installed at $($winget.Source)"
+$winget = Get-Command winget -ErrorAction Stop
+Write-Host "winget is already installed at $($winget.Source)"
 } 
 catch {
-    Write-Host "winget is not installed. Installing now..."
+Write-Host "winget is not installed. Installing now..."
 
-    Start-BitsTransfer -Source  "$uiXamlUrl" -Destination $PSScriptRoot\UIXaml.appx
-    Add-AppxPackage $PSScriptRoot\UIXaml.appx
-    
-    Start-BitsTransfer -Source "$vcLibsurl"  -Destination $PSScriptRoot\VCLibs.appx
-    Add-AppxPackage $PSScriptRoot\VCLibs.appx
+Start-BitsTransfer -Source  "$uiXamlUrl" -Destination $PSScriptRoot\UIXaml.appx
+Add-AppxPackage $PSScriptRoot\UIXaml.appx
 
-    Start-BitsTransfer -Source  "$wingetUrl" -Destination $PSScriptRoot\winget.msixbundle
-    Add-AppxPackage $PSScriptRoot\winget.msixbundle
+Start-BitsTransfer -Source "$vcLibsurl"  -Destination $PSScriptRoot\VCLibs.appx
+Add-AppxPackage $PSScriptRoot\VCLibs.appx
 
-    # Remove the installer file
-    Remove-Item $PSScriptRoot\winget.msixbundle
-    Remove-Item $PSScriptRoot\UIXaml.appx
-    Remove-Item $PSScriptRoot\VCLibs.appx
+Start-BitsTransfer -Source  "$wingetUrl" -Destination $PSScriptRoot\winget.msixbundle
+Add-AppxPackage $PSScriptRoot\winget.msixbundle
 
-    Write-Host "winget is now installed"
+# Remove the installer file
+Remove-Item $PSScriptRoot\winget.msixbundle
+Remove-Item $PSScriptRoot\UIXaml.appx
+Remove-Item $PSScriptRoot\VCLibs.appx
+
+Write-Host "winget is now installed"
 }
 
 # 1Password app
@@ -265,9 +285,9 @@ Get-Process 1Password | Stop-Process
 # 1Password CLI
 $arch = (Get-CimInstance Win32_OperatingSystem).OSArchitecture
 switch ($arch) {
-    '64-bit' { $opArch = 'amd64'; break }
-    '32-bit' { $opArch = '386'; break }
-    Default { Write-Error "Sorry, your operating system architecture '$arch' is unsupported" -ErrorAction Stop }
+'64-bit' { $opArch = 'amd64'; break }
+'32-bit' { $opArch = '386'; break }
+Default { Write-Error "Sorry, your operating system architecture '$arch' is unsupported" -ErrorAction Stop }
 }
 
 
@@ -276,7 +296,7 @@ Start-BitsTransfer -Source "https://cache.agilebits.com/dist/1P/op2/pkg/v2.19.0-
 Expand-Archive -Path $PSScriptRoot\op.zip -DestinationPath $installDir -Force
 $envMachinePath = [System.Environment]::GetEnvironmentVariable('PATH','machine')
 if ($envMachinePath -split ';' -notcontains $installDir){
-    [Environment]::SetEnvironmentVariable('PATH', "$envMachinePath;$installDir", 'Machine')
+[Environment]::SetEnvironmentVariable('PATH', "$envMachinePath;$installDir", 'Machine')
 }
 Remove-Item -Path $PSScriptRoot\op.zip
 Start-Process 1Password
@@ -285,6 +305,7 @@ Read-Host -Prompt "Press any key to continue. . ."
 
 winget install Git.Git -e --accept-package-agreements --accept-source-agreements
 
+#in new instens
 & $PSScriptRoot\SshKeyForGit.ps1
 
 
@@ -298,17 +319,17 @@ winget install --id=M2Team.NanaZip -e --accept-package-agreements --accept-sourc
 winget install --id=Microsoft.WindowsTerminal -e --accept-package-agreements --accept-source-agreements
 
 if ($choiceResultOffice -eq $defaultChoiceOffice) {
-    # Download and install Office 365 from Microsoft
-    Start-BitsTransfer -Source "$office" -Destination $PSScriptRoot\office.exe
+# Download and install Office 365 from Microsoft
+Start-BitsTransfer -Source "$office" -Destination $PSScriptRoot\office.exe
 
-    # Start the Office installer in a separate process
-    Start-Process -FilePath $PSScriptRoot\office.exe -Wait
+# Start the Office installer in a separate process
+Start-Process -FilePath $PSScriptRoot\office.exe -Wait
 
-    # Remove installers
-    Remove-Item $PSScriptRoot\office.exe
+# Remove installers
+Remove-Item $PSScriptRoot\office.exe
 
-    # Run Microsoft Activation Scripts as admin 
-    Start-Process powershell -Verb runAs -ArgumentList 'irm https://massgrave.dev/get | iex' -Wait
+# Run Microsoft Activation Scripts as admin 
+Start-Process powershell -Verb runAs -ArgumentList 'irm https://massgrave.dev/get | iex' -Wait
 }
 
 # Install Python version 3.11.4 by downloading from python.org
@@ -322,18 +343,19 @@ $HyperVInstalled = Get-WindowsOptionalFeature -FeatureName Microsoft-Hyper-V -On
 
 # If Hyper-V is not installed, install it
 if ($HyperVInstalled -ne 'Enabled') {
-    Write-Host "Hyper-V is not installed. Installing..."
-    Enable-WindowsOptionalFeature -Online -FeatureName Microsoft-Hyper-V -All -NoRestart
-    Write-Host "Hyper-V installation complete."
+Write-Host "Hyper-V is not installed. Installing..."
+Enable-WindowsOptionalFeature -Online -FeatureName Microsoft-Hyper-V -All -NoRestart
+Write-Host "Hyper-V installation complete."
 }
 
 if (-not (Test-Path $defaultVMfolder)) {
-    New-Item $defaultVMfolder -ItemType Directory -Force
+New-Item $defaultVMfolder -ItemType Directory -Force
 }
 
 if ($choiceResultwinget -eq $defaultChoicewinget){
-    winget install --id=Mozilla.Firefox.ESR  -e --accept-package-agreements --accept-source-agreements
-    winget install --id=Brave.Brave  -e --accept-package-agreements --accept-source-agreements
+winget install --id=Mozilla.Firefox.ESR  -e --accept-package-agreements --accept-source-agreements
+Start-BitsTransfer -Source  "$thorium_Url" -Destination $PSScriptRoot\th.exe
+.\$PSScriptRoot\th.exe
 }
 # Run a Chris Titus Tech's Windows Utility as admin
 Start-Process powershell -Verb runAs -ArgumentList 'iwr -useb https://christitus.com/win | iex' -Wait
