@@ -33,26 +33,6 @@ if ($wingetasset) {
     Write-Host "Asset not found in the latest release."
 }
 
-# Define repository information
-$thorium_owner = "Alex313031"
-$thorium_repo = "Thorium-Win"
-
-# GitHub API endpoint for latest release
-$thorium_apiUrl = "https://api.github.com/repos/$thorium_owner/$thorium_repo/releases/latest"
-
-# Invoke the GitHub API and retrieve the latest release information
-$thorium_releaseInfo = Invoke-RestMethod -Uri $thorium_apiUrl -Method Get
-
-# Extract the asset information (you might need to adjust this based on your asset's name or criteria)
-$thorium_asset = $thorium_releaseInfo.assets | Where-Object { $_.name -like "thorium_*.exe" }
-
-if ($thorium_asset) {
-$thorium_Url = $thorium_asset.browser_download_url
-
-} else {
-Write-Host "Asset not found in the latest release."
-}
-
 Remove-Item -Path "HKCU:\Software\Microsoft\Windows\CurrentVersion\Run\*" -Recurse
 Remove-Item -Path "HKCU:\Software\Microsoft\Windows\CurrentVersion\RunOnce\*" -Recurse
 Remove-Item -Path "HKLM:\Software\Microsoft\Windows\CurrentVersion\Run\*" -Recurse
@@ -148,8 +128,8 @@ $defaultChoiceOffice = 1
 
 $choiceResultOffice = $host.ui.PromptForChoice($TitleOffice, $PromptOffice, $choicesOffice, $defaultChoiceOffice)
 
-$Promptwinget = "Do you want to install Firefox & Thorium using winget?"
-$Titlewinget = "Firefox/Thorium Installation"
+$Promptwinget = "Do you want to install Firefox & Brave using winget?"
+$Titlewinget = "Firefox/Brave Installation"
 
 $choiceswinget = [System.Management.Automation.Host.ChoiceDescription[]]@(
 (New-Object System.Management.Automation.Host.ChoiceDescription -ArgumentList '&Yes'),
@@ -353,8 +333,7 @@ New-Item $defaultVMfolder -ItemType Directory -Force
 
 if ($choiceResultwinget -eq $defaultChoicewinget){
 winget install --id=Mozilla.Firefox.ESR  -e --accept-package-agreements --accept-source-agreements
-Start-BitsTransfer -Source  "$thorium_Url" -Destination $PSScriptRoot\th.exe
-.\$PSScriptRoot\th.exe
+winget install --id=Brave.Brave -e --accept-package-agreements --accept-source-agreements
 }
 # Run a Chris Titus Tech's Windows Utility as admin
 Start-Process powershell -Verb runAs -ArgumentList 'iwr -useb https://christitus.com/win | iex' -Wait
