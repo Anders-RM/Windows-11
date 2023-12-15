@@ -29,4 +29,3 @@ Copy-Item -Path $source -Destination $destination -Recurse -Verbose
 
 # Stop the transcript
 Stop-Transcript
-
