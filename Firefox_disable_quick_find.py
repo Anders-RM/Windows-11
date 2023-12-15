@@ -2,45 +2,37 @@
 import os
 import logging
 import sys
-import subprocess
-
+from shutil import which
+from pathlib import Path
 
 # Configure the logging module
 logging.basicConfig(filename='python.log', level=logging.DEBUG)
 
 # Define a function to check if Firefox is installed
 def is_firefox_installed():
-    try:
-        subprocess.run(["firefox", "--version"], stdout=subprocess.PIPE, stderr=subprocess.PIPE)
-        return True
-    except FileNotFoundError:
-        return False
+    return which("firefox") is not None
 
 def disable_quick_find():
+    # Map platforms to profile directory paths
+    profile_paths = {
+        'win': Path(os.getenv('APPDATA')) / 'Mozilla' / 'Firefox' / 'Profiles',
+        'linux': Path.home() / '.mozilla' / 'firefox',
+        'darwin': Path.home() / 'Library' / 'Application Support' / 'Firefox' / 'Profiles'
+    }
+
     # Find the location of the Firefox profile directory
-    if sys.platform.startswith('win'):
-        app_data = os.getenv('APPDATA')
-        profile_dir = os.path.join(app_data, 'Mozilla', 'Firefox', 'Profiles')
-    elif sys.platform.startswith('linux'):
-        home_dir = os.path.expanduser("~")
-        profile_dir = os.path.join(home_dir, ".mozilla", "firefox")
-    elif sys.platform.startswith('darwin'):
-        home_dir = os.path.expanduser("~")
-        profile_dir = os.path.join(home_dir, "Library", "Application Support", "Firefox", "Profiles")
-    else:
+    platform = sys.platform[:3]
+    if platform not in profile_paths:
         raise Exception("Unsupported operating system.")
-    
+    profile_dir = profile_paths[platform]
+
     # Locate the prefs.js file within the profile directory
-    prefs_file = None
-    for dirpath, dirnames, filenames in os.walk(profile_dir):
-        if "prefs.js" in filenames:
-            prefs_file = os.path.join(dirpath, "prefs.js")
-            break
-            
+    prefs_file = next(profile_dir.rglob('prefs.js'), None)
+
     # Check if the prefs.js file was found
-    if prefs_file is None or not os.path.isfile(prefs_file):
+    if prefs_file is None or not prefs_file.is_file():
         raise Exception("Failed to locate the prefs.js file.")
-    
+
     # Disable Quick Find in the prefs.js file
     with open(prefs_file, "a") as file:
         file.write("user_pref('accessibility.typeaheadfind', false);\n")
