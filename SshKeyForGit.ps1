@@ -12,6 +12,7 @@ $gitConfigSettings = @{
     'gpg.format' = 'ssh'
     'gpg.ssh.program' = "$env:LOCALAPPDATA\1Password\app\8\op-ssh-sign.exe"
     'commit.gpgsign' = 'true'
+    'url "git@github.com:"' = 'insteadOf = https://github.com/'
 }
 
 $gitConfigSettings.Keys | ForEach-Object {
