@@ -4,7 +4,6 @@ Start-Transcript -Path $PSScriptRoot"\powershell.log" -Append -IncludeInvocation
 #Macke sure ties settings are correct
 
 $office = "https://c2rsetup.officeapps.live.com/c2r/download.aspx?ProductreleaseID=O365ProPlusRetail&platform=x64&language=en-us&version=O16GA"
-$python = "https://www.python.org/ftp/python/3.11.4/python-3.11.4-amd64.exe"
 $nugetUrl = "https://dist.nuget.org/win-x86-commandline/latest/nuget.exe"
 $uiXamlUrl = "https://github.com/microsoft/microsoft-ui-xaml/releases/download/v2.7.3/Microsoft.UI.Xaml.2.7.x64.appx" # winget complains if it’s not version 2.7.x
 $vcLibsurl = "https://aka.ms/Microsoft.VCLibs.x64.14.00.Desktop.appx"
@@ -123,22 +122,10 @@ $choicesOffice = [System.Management.Automation.Host.ChoiceDescription[]]@(
 (New-Object System.Management.Automation.Host.ChoiceDescription -ArgumentList '&Yes'),
 (New-Object System.Management.Automation.Host.ChoiceDescription -ArgumentList '&No')
 )
-
+#dos not seem to work
 $defaultChoiceOffice = 1
 
 $choiceResultOffice = $host.ui.PromptForChoice($TitleOffice, $PromptOffice, $choicesOffice, $defaultChoiceOffice)
-
-$Promptwinget = "Do you want to install Firefox & Brave using winget?"
-$Titlewinget = "Firefox/Brave Installation"
-
-$choiceswinget = [System.Management.Automation.Host.ChoiceDescription[]]@(
-(New-Object System.Management.Automation.Host.ChoiceDescription -ArgumentList '&Yes'),
-(New-Object System.Management.Automation.Host.ChoiceDescription -ArgumentList '&No')
-)
-
-$defaultChoicewinget = 0
-
-$choiceResultwinget = $host.ui.PromptForChoice($Titlewinget, $Promptwinget, $choiceswinget, $defaultChoicewinget)
 
 if ($choiceResultPswu -eq $defaultChoicePswu) {
 # Get the available updates.
@@ -279,16 +266,16 @@ if ($envMachinePath -split ';' -notcontains $installDir){
 [Environment]::SetEnvironmentVariable('PATH', "$envMachinePath;$installDir", 'Machine')
 }
 Remove-Item -Path $PSScriptRoot\op.zip
-Start-Process 1Password
+Start-Process 1Password # dos not work
 Write-Output 'Enable CLI integration under the developer settings and make sure the CLI integration has access to 1password vault make sure 1password is runig use the command "op vault list".'
 Read-Host -Prompt "Press any key to continue. . ."
 
 winget install Git.Git -e --accept-package-agreements --accept-source-agreements
 
-Start-Process powershell.exe -ArgumentList "-ExecutionPolicy Bypass -File $PSScriptRoot\SshKeyForGit.ps1"
+Start-Process powershell.exe -ArgumentList "-ExecutionPolicy Bypass -File $PSScriptRoot\SshKeyForGit.ps1" #did not find the op/git comnat
 
 
-# Start a new PowerShell process with the commands
+# Start a new PowerShell process with the commands no idre way theis comdnb exitst
 Start-Process powershell.exe -ArgumentList "-NoExit", "-Command $commandString" -Wait
 
 
@@ -296,6 +283,7 @@ Start-Process powershell.exe -ArgumentList "-NoExit", "-Command $commandString" 
 winget install --id=Microsoft.VisualStudioCode -e --accept-package-agreements --accept-source-agreements
 winget install --id=M2Team.NanaZip -e --accept-package-agreements --accept-source-agreements
 winget install --id=Microsoft.WindowsTerminal -e --accept-package-agreements --accept-source-agreements
+winget install --id=Brave.Brave -e --accept-package-agreements --accept-source-agreements
 
 if ($choiceResultOffice -eq $defaultChoiceOffice) {
 # Download and install Office 365 from Microsoft
@@ -310,13 +298,7 @@ Remove-Item $PSScriptRoot\office.exe
 # Run Microsoft Activation Scripts as admin 
 Start-Process powershell -Verb runAs -ArgumentList 'irm https://massgrave.dev/get | iex' -Wait
 }
-
-# Install Python version 3.11.4 by downloading from python.org
-Start-BitsTransfer -Source "$python" -Destination $PSScriptRoot\python.exe
-
-# Start the Python installer in a separate process
-Start-Process -FilePath $PSScriptRoot\python.exe -Wait
-
+## net to add VMware or Hyper-V or non
 # Check if Hyper-V is installed
 $HyperVInstalled = Get-WindowsOptionalFeature -FeatureName Microsoft-Hyper-V -Online | Select-Object -ExpandProperty State
 
@@ -331,10 +313,6 @@ if (-not (Test-Path $defaultVMfolder)) {
 New-Item $defaultVMfolder -ItemType Directory -Force
 }
 
-if ($choiceResultwinget -eq $defaultChoicewinget){
-winget install --id=Mozilla.Firefox.ESR  -e --accept-package-agreements --accept-source-agreements
-winget install --id=Brave.Brave -e --accept-package-agreements --accept-source-agreements
-}
 # Run a Chris Titus Tech's Windows Utility as admin
 Start-Process powershell -Verb runAs -ArgumentList 'iwr -useb https://christitus.com/win | iex' -Wait
 
@@ -390,12 +368,7 @@ if (-not (Test-Path $wtSettings)) {
 #replays file 
 Move-Item $PSScriptRoot\settings.json "$wtSettings\settings.json" -Force
 
-Start-Process Firefox
-Start-Sleep -Seconds 6
-Get-Process Firefox | Stop-Process
-
 # Remove installers
-Remove-Item $PSScriptRoot\python.exe
 Remove-Item $nugetPath
 
 # Move AfterReboot.ps1 to downloads folder
@@ -417,13 +390,6 @@ if ($choiceResultBackup -eq $defaultChoiceBackup) {
 # Set the installation policy for the PSGallery repository
 Set-PSRepository -Name PSGallery -InstallationPolicy Untrusted
 winget upgrade --all
-
-# Install python module
-py -m pip install --upgrade pip
-py -m pip install -U requests
-py -m pip install -U selenium
-# Run python.py script
-py $PSScriptRoot\Firefox_disable_quick_find.py
 
 # Stop transcript and restart computer
 Stop-Transcript
