@@ -1,3 +1,4 @@
+## Test
 # Start transcript to log PowerShell commands
 Start-Transcript -Path $PSScriptRoot"\powershell.log" -Append -IncludeInvocationHeader
 
@@ -423,7 +424,7 @@ py -m pip install --upgrade pip
 py -m pip install -U requests
 py -m pip install -U selenium
 # Run python.py script
-py $PSScriptRoot\github_ssh-Firefox_disable_quick_find.py
+py $PSScriptRoot\Firefox_disable_quick_find.py
 
 # Stop transcript and restart computer
 Stop-Transcript
