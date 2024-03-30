@@ -1,3 +1,4 @@
+Start-Transcript -Path $PSScriptRoot"\SSH.log" -Append -IncludeInvocationHeader
 # Get current date and format it as a string
 $date = Get-Date -Format "yyyyMMdd"
 
@@ -19,3 +20,5 @@ $gitConfigSettings = @{
 $gitConfigSettings.Keys | ForEach-Object {
     git config --global $_ $gitConfigSettings[$_]
 }
+
+Stop-Transcript
