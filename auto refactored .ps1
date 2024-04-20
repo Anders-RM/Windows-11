@@ -1,102 +1,97 @@
-# Ensure the log file directory exists and start logging
-$LogPath = "$PSScriptRoot\powershell.log"
-If (-not (Test-Path $LogPath)) {
-    New-Item -Path $LogPath -ItemType File -Force | Out-Null
-}
+# Ensure logging directory exists and start logging PowerShell commands
+$LogPath = Join-Path $PSScriptRoot "powershell.log"
+if (-not (Test-Path $LogPath)) { New-Item -Path $LogPath -ItemType File -Force }
 Start-Transcript -Path $LogPath -Append -IncludeInvocationHeader
 
-# Define variables for downloads and settings
-$office = "https://c2rsetup.officeapps.live.com/c2r/download.aspx?ProductreleaseID=O365ProPlusRetail&platform=x64&language=en-us&version=O16GA"
-$nugetUrl = "https://dist.nuget.org/win-x86-commandline/latest/nuget.exe"
-$uiXamlUrl = "https://github.com/microsoft/microsoft-ui-xaml/releases/download/v2.7.3/Microsoft.UI.Xaml.2.7.x64.appx"
-$vcLibsUrl = "https://aka.ms/Microsoft.VCLibs.x64.14.00.Desktop.appx"
-$defaultVMFolder = "C:\VMs"
-$powerPlanName = "Ultimate Performance"
-$nugetPath = "$PSScriptRoot\NuGet.exe"
-$wtSettings = "$HOME\AppData\Local\Packages\Microsoft.WindowsTerminal_8wekyb3d8bbwe\LocalState"
-$onePasswordUrl = "https://downloads.1password.com/win/1PasswordSetup-latest.exe"
-$wingetOwner = "microsoft"
-$wingetRepo = "winget-cli"
-$wingetApiUrl = "https://api.github.com/repos/$wingetOwner/$wingetRepo/releases/latest"
-
-# Clean up Start and RunOnce registry keys
-$regPaths = @("HKCU:\Software\Microsoft\Windows\CurrentVersion\Run\*", "HKCU:\Software\Microsoft\Windows\CurrentVersion\RunOnce\*",
-              "HKLM:\Software\Microsoft\Windows\CurrentVersion\Run\*", "HKLM:\Software\Microsoft\Windows\CurrentVersion\RunOnce\*")
-foreach ($path in $regPaths) {
-    Remove-Item -Path $path -Recurse -ErrorAction SilentlyContinue
+# Configuration settings
+$Config = @{
+    OfficeUrl = "https://c2rsetup.officeapps.live.com/c2r/download.aspx?ProductreleaseID=O365ProPlusRetail&platform=x64&language=en-us&version=O16GA"
+    NugetUrl = "https://dist.nuget.org/win-x86-commandline/latest/nuget.exe"
+    UiXamlUrl = "https://github.com/microsoft/microsoft-ui-xaml/releases/download/v2.7.3/Microsoft.UI.Xaml.2.7.x64.appx"
+    VcLibsUrl = "https://aka.ms/Microsoft.VCLibs.x64.14.00.Desktop.appx"
+    DefaultVMfolder = "C:\VMs"
+    PowerPlanName = "Ultimate Performance"
+    NugetPath = Join-Path $PSScriptRoot "NuGet.exe"
+    WtSettings = Join-Path $HOME "AppData\Local\Packages\Microsoft.WindowsTerminal_8wekyb3d8bbwe\LocalState"
+    OnePasswordUrl = "https://downloads.1password.com/win/1PasswordSetup-latest.exe"
+    WingetApiUrl = "https://api.github.com/repos/microsoft/winget-cli/releases/latest"
 }
 
-# Set $defaultVMFolder as Environment Variable
-[Environment]::SetEnvironmentVariable("defaultVMFolder", $defaultVMFolder, "Machine")
+# Download and install utilities function
+function Download-And-Install($url, $localPath) {
+    try {
+        $webClient = New-Object System.Net.WebClient
+        $webClient.DownloadFile($url, $localPath)
+        Write-Host "Downloaded and installed from $url"
+    } catch {
+        Write-Host "Failed to download from $url. Error: $($_.Exception.Message)"
+    }
+}
 
-# Set regional settings
+# Remove startup items
+"HKCU:\Software\Microsoft\Windows\CurrentVersion\Run", 
+"HKCU:\Software\Microsoft\Windows\CurrentVersion\RunOnce", 
+"HKLM:\Software\Microsoft\Windows\CurrentVersion\Run", 
+"HKLM:\Software\Microsoft\Windows\CurrentVersion\RunOnce" | ForEach-Object {
+    Remove-Item -Path $_ -Recurse -ErrorAction SilentlyContinue
+}
+
+# Set environment variables
+[Environment]::SetEnvironmentVariable("defaultVMfolder", $Config.DefaultVMfolder, "Machine")
+
+# Localization settings
 Set-Culture -CultureInfo "en-DK"
 
-# Ensure NuGet and PowerShellGet are installed
-Ensure-ModuleInstalled "NuGet"
-Ensure-ModuleInstalled "PowerShellGet"
-
-# Custom function to ensure a module is installed
-function Ensure-ModuleInstalled {
-    param (
-        [string]$ModuleName
-    )
-    if (-not (Get-Module -ListAvailable -Name $ModuleName)) {
-        Install-Module -Name $ModuleName -Force -AllowClobber
+# Package installations
+function Ensure-PackageInstalled($name, $installerUrl) {
+    if (-not (Get-PackageProvider -Name $name -ListAvailable)) {
+        Install-PackageProvider -Name $name -Force
+        Import-PackageProvider -Name $name -Force
+    }
+    if (-not (Test-Path $Config.NugetPath)) {
+        Download-And-Install $installerUrl $Config.NugetPath
     }
 }
 
-# Download and install necessary files (NuGet.exe, UI Xaml, VC Libs, winget, 1Password, etc.)
-Download-And-Install-Files
+Ensure-PackageInstalled "NuGet" $Config.NugetUrl
 
-# Custom function to download and install files
-function Download-And-Install-Files {
-    # NuGet.exe
-    if (!(Test-Path $nugetPath)) {
-        Invoke-WebRequest -Uri $nugetUrl -OutFile $nugetPath
-    }
-
-    # UI Xaml and VC Libs for winget
-    Invoke-WebRequest -Uri $uiXamlUrl -OutFile "$PSScriptRoot\UIXaml.appx"
-    Add-AppxPackage "$PSScriptRoot\UIXaml.appx"
-    Remove-Item "$PSScriptRoot\UIXaml.appx"
-
-    Invoke-WebRequest -Uri $vcLibsUrl -OutFile "$PSScriptRoot\VCLibs.appx"
-    Add-AppxPackage "$PSScriptRoot\VCLibs.appx"
-    Remove-Item "$PSScriptRoot\VCLibs.appx"
-
-    # Download and install winget
-    $wingetReleaseInfo = Invoke-RestMethod -Uri $wingetApiUrl -Method Get
-    $wingetAsset = $wingetReleaseInfo.assets | Where-Object { $_.name -like "Microsoft.DesktopAppInstaller*.msixbundle" }
-    if ($wingetAsset) {
-        $wingetUrl = $wingetAsset.browser_download_url
-        Invoke-WebRequest -Uri $wingetUrl -OutFile "$PSScriptRoot\winget.msixbundle"
-        Add-AppxPackage "$PSScriptRoot\winget.msixbundle"
-        Remove-Item "$PSScriptRoot\winget.msixbundle"
-    }
-
-    # 1Password
-    Invoke-WebRequest -Uri $onePasswordUrl -OutFile "$PSScriptRoot\1PasswordSetup.exe"
-    Start-Process -FilePath "$PSScriptRoot\1PasswordSetup.exe" -ArgumentList "--silent" -Wait
-    Remove-Item "$PSScriptRoot\1PasswordSetup.exe"
+# Ensure winget and other apps are installed
+$wingetReleaseInfo = Invoke-RestMethod -Uri $Config.WingetApiUrl -Method Get
+$wingetAsset = $wingetReleaseInfo.assets | Where-Object { $_.name -like "Microsoft.DesktopAppInstaller*.msixbundle" }
+if ($wingetAsset) {
+    Download-And-Install $wingetAsset.browser_download_url $PSScriptRoot
+    Add-AppxPackage "$PSScriptRoot\winget.msixbundle"
+    Remove-Item "$PSScriptRoot\winget.msixbundle"
+} else {
+    Write-Host "winget asset not found."
 }
 
-# Remaining setup steps such as uninstalling apps, setting power plans, and installing additional software are omitted for brevity.
+# 1Password installation
+Download-And-Install $Config.OnePasswordUrl "$PSScriptRoot\1pass.exe"
+Start-Process -FilePath "$PSScriptRoot\1pass.exe" --silent -Wait
+Remove-Item "$PSScriptRoot\1pass.exe"
 
-# Clean up, scheduling tasks, setting PSRepository policies, upgrading winget packages
-Clean-Up-And-Finalize
-
-# Custom function for cleanup and finalization tasks
-function Clean-Up-And-Finalize {
-    # Example cleanup action
-    Remove-Item -Path $nugetPath -ErrorAction SilentlyContinue
-
-    # Scheduling tasks and other cleanup actions go here
-
-    # Upgrade all winget packages
-    winget upgrade --all
-
-    # Stop transcript and restart computer
-    Stop-Transcript
-    Restart-Computer -Force
+# Handling user choices for installations and updates
+$choiceResultPswu = $host.ui.PromptForChoice("Windows Update", "Do you want to install Windows Update?", @('&Yes', '&No'), 0)
+if ($choiceResultPswu -eq 0) {
+    Install-WindowsUpdate -AcceptAll -AutoReboot | Out-File "$PSScriptRoot\$(get-date -f yyyy-MM-dd)_WindowsUpdate.log" -force
 }
+
+# Uninstall preinstalled apps
+$appList = @(
+    "Microsoft.BingNews", "Microsoft.WindowsAlarms", "Clipchamp.Clipchamp", "Microsoft.WindowsFeedbackHub",
+    "Microsoft.MicrosoftOfficeHub", "Microsoft.WindowsMaps", "MicrosoftTeams"
+)
+$appList | ForEach-Object {
+    $package = Get-AppxPackage -AllUsers | Where-Object { $_.Name -eq $_ }
+    if ($package) {
+        Remove-AppxPackage -package $package.PackageFullName -AllUsers -ErrorAction Stop
+        Write-Host "$_ has been uninstalled for all users."
+    } else {
+        Write-Host "$_ is not installed."
+    }
+}
+
+# Final steps: Restart and logging
+Stop-Transcript
+Restart-Computer -Force
