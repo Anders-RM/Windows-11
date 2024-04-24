@@ -69,10 +69,10 @@ function PromptChoice {
 }
 
 # 0 = Yes, 1 = No, Default = 0
-$Backup = PromptChoice -Title "Set up backup task schedule" -Prompt "Do you want to activate backup?" -Choices @("Yes", "No")
+$Backup = PromptChoice -Title "Set up backup task schedule" -Prompt "Do you want to activate backup?" -Choices @("Yes", "No") -DefaultChoice 1
 $Update = PromptChoice -Title "Windows Update" -Prompt "Do you want to install Windows Update?" -Choices @("Yes", "No")
-$Office = PromptChoice -Title "Office Installation" -Prompt "Do you want to install and activate Office?" -Choices @("Yes", "No") -DefaultChoice 1
-$VM = PromptChoice -Title "VM Platform" -Prompt "Do you want want to install a VM platform?" -Choices @("Yes", "No") -DefaultChoice 1
+$Office = PromptChoice -Title "Office Installation" -Prompt "Do you want to install and activate Office?" -Choices @("Yes", "No")
+$VM = PromptChoice -Title "VM Platform" -Prompt "Do you want want to install a VM platform?" -Choices @("Yes", "No")
 
 if ($VM -eq 0) {
     $vmPlatform = PromptChoice -Title "VM Platform" -Prompt "Which VM platform do you want to install?" -Choices @("Hyper-V", "VMware") -DefaultChoice 1
