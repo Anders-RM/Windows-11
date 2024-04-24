@@ -72,19 +72,48 @@ function PromptChoice {
 $Backup = PromptChoice -Title "Set up backup task schedule" -Prompt "Do you want to activate backup?" -Choices @("Yes", "No")
 $Update = PromptChoice -Title "Windows Update" -Prompt "Do you want to install Windows Update?" -Choices @("Yes", "No")
 $Office = PromptChoice -Title "Office Installation" -Prompt "Do you want to install and activate Office?" -Choices @("Yes", "No") -DefaultChoice 1
-$VM = PromptChoice -Title "VM Platform" -Prompt "Do you want a VM platform?" -Choices @("Yes", "No") -DefaultChoice 1
+$VM = PromptChoice -Title "VM Platform" -Prompt "Do you want want to install a VM platform?" -Choices @("Yes", "No") -DefaultChoice 1
 
 if ($VM -eq 0) {
     $vmPlatform = PromptChoice -Title "VM Platform" -Prompt "Which VM platform do you want to install?" -Choices @("Hyper-V", "VMware") -DefaultChoice 1
 }
 
+# Check if NuGet is installed
+if ($null -ne (Get-PackageProvider -ListAvailable | Where-Object { $_.Name -eq "NuGet" })) {
+    Write-Host "NuGet is already installed."
+} else {
+    # Install NuGet if it's not already installed
+    try {
+        Install-PackageProvider -Name NuGet -Force
+        Import-PackageProvider NuGet -Force
+
+        # Check if NuGet exists
+        if (!(Test-Path $Config.nugetPath)) {
+            # NuGet doesn't exist, so download it
+            $webClient = New-Object System.Net.WebClient
+            try {
+                $webClient.DownloadFile($Config.nugetUrl, $Config.nugetPath)
+            } catch {
+                Write-Host "Failed to download NuGet from "$Config.nugetUrl "to" $Config.nugetPath"."
+                Write-Host $_.Exception.Message
+            }
+        }
+
+        Write-Host "NuGet has been installed."
+    } catch {
+        Write-Host "Failed to install NuGet."
+        Write-Host $_.Exception.Message
+    }
+}
+
+InstallModule "PSWindowsUpdate"
+InstallModule "PowerShellGet"
+Set-PSRepository -Name PSGallery -InstallationPolicy Trusted
+
 Remove-Item -Path "HKCU:\Software\Microsoft\Windows\CurrentVersion\Run\*" -Recurse
 Remove-Item -Path "HKCU:\Software\Microsoft\Windows\CurrentVersion\RunOnce\*" -Recurse
 Remove-Item -Path "HKLM:\Software\Microsoft\Windows\CurrentVersion\Run\*" -Recurse
 Remove-Item -Path "HKLM:\Software\Microsoft\Windows\CurrentVersion\RunOnce\*" -Recurse
-
-InstallModule "PowerShellGet"
-Set-PSRepository -Name PSGallery -InstallationPolicy Trusted
 
 if ($Update -eq 0) {
     # Get the available updates.
@@ -169,34 +198,6 @@ if ($wingetasset) {
    
 } else {
     Write-Host "Asset not found in the latest release."
-}
-
-# Check if NuGet is installed
-if ($null -ne (Get-PackageProvider -ListAvailable | Where-Object { $_.Name -eq "NuGet" })) {
-    Write-Host "NuGet is already installed."
-} else {
-    # Install NuGet if it's not already installed
-    try {
-        Install-PackageProvider -Name NuGet -Force
-        Import-PackageProvider NuGet -Force
-
-        # Check if NuGet exists
-        if (!(Test-Path $Config.nugetPath)) {
-            # NuGet doesn't exist, so download it
-            $webClient = New-Object System.Net.WebClient
-            try {
-                $webClient.DownloadFile($Config.nugetUrl, $Config.nugetPath)
-            } catch {
-                Write-Host "Failed to download NuGet from "$Config.nugetUrl "to" $Config.nugetPath"."
-                Write-Host $_.Exception.Message
-            }
-        }
-
-        Write-Host "NuGet has been installed."
-    } catch {
-        Write-Host "Failed to install NuGet."
-        Write-Host $_.Exception.Message
-    }
 }
 
 # Test if winget is installed
