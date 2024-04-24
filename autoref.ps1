@@ -252,12 +252,12 @@ if ($envMachinePath -split ';' -notcontains $installDir){
 }
 Remove-Item -Path $PSScriptRoot\op.zip
 Start-Process *1Password*
-Write-Output 'Enable CLI integration under the developer settings and make sure the CLI integration has access to 1password vault make sure 1password is runig use the command "op vault list".'
+Write-Output 'Enable CLI integration under the developer settings and make sure the CLI integration has access to 1password vault make sure 1password is runig use the command "op vault list". And Run SshKeyForGit.ps1'
 Read-Host -Prompt "Press any key to continue. . ."
 
 winget install Git.Git -e --accept-package-agreements --accept-source-agreements
 
-Start-Process powershell.exe -ArgumentList "-ExecutionPolicy Bypass -File $PSScriptRoot\SshKeyForGit.ps1" #did not find the op/git comnat
+# Start-Process powershell.exe -ArgumentList "-ExecutionPolicy Bypass -File $PSScriptRoot\SshKeyForGit.ps1" #did not find the op/git comnat
 
 
 # Start a new PowerShell process with the commands no idre way theis comdnb exitst
