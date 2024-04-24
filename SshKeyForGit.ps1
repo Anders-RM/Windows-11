@@ -23,3 +23,4 @@ $gitConfigSettings.Keys | ForEach-Object {
 }
 
 Stop-Transcript
+Read-Host -Prompt "Press any key to continue. . ."
