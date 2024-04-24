@@ -14,7 +14,7 @@ $gitConfigSettings = @{
     'gpg.format' = 'ssh'
     'gpg.ssh.program' = "$env:LOCALAPPDATA\1Password\app\8\op-ssh-sign.exe"
     'commit.gpgsign' = 'true'
-    'url."git@github.com:"' = 'insteadOf = https://github.com/'
+    'url."git@github.com:".insteadOf' = 'https://github.com/'
     'core.sshCommand' = "C:/Windows/System32/OpenSSH/ssh.exe"
 }
 
