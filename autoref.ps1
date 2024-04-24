@@ -254,7 +254,7 @@ if ($envMachinePath -split ';' -notcontains $installDir){
 Remove-Item -Path $PSScriptRoot\op.zip
 
 winget install Git.Git -e --accept-package-agreements --accept-source-agreements
-Start-Process "$env:LOCALAPPDATA\1Password\app\8\1Password.exe"
+Start-Process powershell.exe -ArgumentList "-NoExit", "-Command $env:LOCALAPPDATA\1Password\app\8\1Password.exe" 
 Write-Output 'Enable CLI integration under the developer settings and make sure the CLI integration has access to 1password vault make sure 1password is runig use the command "op vault list". And Run SshKeyForGit.ps1'
 Read-Host -Prompt "Press any key to continue. . ."
 
