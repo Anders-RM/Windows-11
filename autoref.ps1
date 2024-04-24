@@ -44,6 +44,13 @@ $appList = @(
     "Microsoft.windowscommunicationsapps"
 )
 
+# Install Programs using winget
+$packageIds = @(
+    "Microsoft.VisualStudioCode",
+    "M2Team.NanaZip",
+    "Microsoft.WindowsTerminal",
+    "Brave.Brave"
+)
 
 # Set the region to English Denmark
 Set-Culture -CultureInfo "en-DK"
@@ -254,24 +261,17 @@ if ($envMachinePath -split ';' -notcontains $installDir){
 Remove-Item -Path $PSScriptRoot\op.zip
 
 winget install Git.Git -e --accept-package-agreements --accept-source-agreements
-Start-Process powershell.exe -ArgumentList "-NoExit", "-Command $env:LOCALAPPDATA\1Password\app\8\1Password.exe" 
 Write-Output 'Enable CLI integration under the developer settings and make sure the CLI integration has access to 1password vault make sure 1password is runig use the command "op vault list". And Run SshKeyForGit.ps1'
 Read-Host -Prompt "Press any key to continue. . ."
 
-
-
 # Start-Process powershell.exe -ArgumentList "-ExecutionPolicy Bypass -File $PSScriptRoot\SshKeyForGit.ps1" #did not find the op/git comnat
-
 
 # Start a new PowerShell process with the commands no idre way theis comdnb exitst
 #Start-Process powershell.exe -ArgumentList "-NoExit", "-Command $commandString" -Wait
 
-
-# Install Programs using winget
-winget install --id=Microsoft.VisualStudioCode -e --accept-package-agreements --accept-source-agreements
-winget install --id=M2Team.NanaZip -e --accept-package-agreements --accept-source-agreements
-winget install --id=Microsoft.WindowsTerminal -e --accept-package-agreements --accept-source-agreements
-winget install --id=Brave.Brave -e --accept-package-agreements --accept-source-agreements
+foreach ($packageId in $packageIds) {
+    winget install --id=$packageId -e --accept-package-agreements --accept-source-agreements
+}
 
 if ($office -eq 0) {
 # Download and install Office 365 from Microsoft
@@ -317,6 +317,7 @@ Set-ItemProperty -Path "HKCU:\SOFTWARE\Microsoft\Windows\CurrentVersion\Explorer
 Set-ItemProperty -Path "HKCU:\Software\Microsoft\Clipboard" -Name "EnableClipboardHistory" -Value 1 -Force
 Set-ItemProperty -Path "HKCU:\Control Panel\Accessibility\StickyKeys" -Name "Flags" -Value 506 -Force
 New-ItemProperty -Path "HKLM:\SYSTEM\CurrentControlSet\Control\FileSystem" -Name "LongPathsEnabled" -Value 1 -PropertyType DWORD -Force
+New-ItemProperty -Path "HKCU:\SOFTWARE\Microsoft\Windows\CurrentVersion\Explorer" -Name "EnableAutoTray" -Value 1 -PropertyType DWORD -Force
 
 # Set the power button behavior to do nothing
 powercfg -SETACVALUEINDEX SCHEME_CURRENT SUB_BUTTONS PBUTTONACTION 0
