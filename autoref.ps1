@@ -266,8 +266,7 @@ Read-Host -Prompt "Press any key to continue. . ."
 
 # Start-Process powershell.exe -ArgumentList "-ExecutionPolicy Bypass -File $PSScriptRoot\SshKeyForGit.ps1" #did not find the op/git comnat
 
-# Start a new PowerShell process with the commands no idre way theis comdnb exitst
-#Start-Process powershell.exe -ArgumentList "-NoExit", "-Command $commandString" -Wait
+sh "$PSScriptRoot\Start SshKeyForGit.bat"
 
 foreach ($packageId in $packageIds) {
     winget install --id=$packageId -e --accept-package-agreements --accept-source-agreements
