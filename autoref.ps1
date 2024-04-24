@@ -127,11 +127,10 @@ if ($Update -eq 0) {
 
 # Check if OneDrive is installed
 $onedriveInstalled = $false
-# -or dos not work
+
 if ((Test-Path "$env:windir\System32\OneDriveSetup.exe") -or (Test-Path "$env:windir\SysWOW64\OneDriveSetup.exe")) {
     $onedriveInstalled = $true
 }
-
 
 # Uninstall OneDrive if it is installed
 if ($onedriveInstalled) {
@@ -264,7 +263,7 @@ Read-Host -Prompt "Press any key to continue. . ."
 
 
 # Start a new PowerShell process with the commands no idre way theis comdnb exitst
-Start-Process powershell.exe -ArgumentList "-NoExit", "-Command $commandString" -Wait
+#Start-Process powershell.exe -ArgumentList "-NoExit", "-Command $commandString" -Wait
 
 
 # Install Programs using winget
