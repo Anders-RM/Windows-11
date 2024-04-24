@@ -3,7 +3,7 @@ Start-Transcript -Path $PSScriptRoot"\SSH.log" -Append -IncludeInvocationHeader
 $date = Get-Date -Format "yyyyMMdd"
 
 # add date to key --title
-op ssh generate --title "$env:computername-$date" --fields "label=public key"
+op ssh generate --title "$env:computername-$date"
 $sshKey = op item get "$env:computername-$date" --fields "label=public key"
 $modifiedsshKey = $sshKey.Replace("`r`n", "").Replace("""", "")
 
