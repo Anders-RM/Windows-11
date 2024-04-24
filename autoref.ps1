@@ -252,7 +252,7 @@ if ($envMachinePath -split ';' -notcontains $installDir){
     [Environment]::SetEnvironmentVariable('PATH', "$envMachinePath;$installDir", 'Machine')
 }
 Remove-Item -Path $PSScriptRoot\op.zip
-#Start-Process *1Password*
+
 winget install Git.Git -e --accept-package-agreements --accept-source-agreements
 Write-Output 'Enable CLI integration under the developer settings and make sure the CLI integration has access to 1password vault make sure 1password is runig use the command "op vault list". And Run SshKeyForGit.ps1'
 Read-Host -Prompt "Press any key to continue. . ."
