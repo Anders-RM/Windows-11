@@ -264,7 +264,7 @@ Write-Output 'Enable CLI integration under the developer settings and make sure 
 Read-Host -Prompt "Press any key to continue. . ."
 
 # Start SSH Key for Git
-Start-Process -FilePath "StartSSHKeyForGit.bat" -Verb RunAs -Wait
+Start-Process -FilePath "$PSScriptRoot\StartSSHKeyForGit.bat" -Verb RunAs -Wait
 Read-Host -Prompt "Press any key to continue. . ."
 
 
