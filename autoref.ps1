@@ -260,13 +260,8 @@ if ($envMachinePath -split ';' -notcontains $installDir){
 Remove-Item -Path $PSScriptRoot\op.zip
 
 winget install Git.Git -e --accept-package-agreements --accept-source-agreements
-Write-Output 'Enable CLI integration under the developer settings and make sure the CLI integration has access to 1password vault make sure 1password is runig use the command "op vault list".'
+Write-Output 'Enable CLI integration under the developer settings and Run StartSSHKeyForGit.bat.'
 Read-Host -Prompt "Press any key to continue. . ."
-
-# Start SSH Key for Git
-Start-Process -FilePath "$PSScriptRoot\StartSSHKeyForGit.bat" -Verb RunAs -Wait
-Read-Host -Prompt "Press any key to continue. . ."
-
 
 foreach ($packageId in $packageIds) {
     winget install --id=$packageId -e --accept-package-agreements --accept-source-agreements
