@@ -263,8 +263,9 @@ winget install Git.Git -e --accept-package-agreements --accept-source-agreements
 Write-Output 'Enable CLI integration under the developer settings and make sure the CLI integration has access to 1password vault make sure 1password is runig use the command "op vault list".'
 Read-Host -Prompt "Press any key to continue. . ."
 
-#cmd.exe /c StartSSHKeyForGit.bat
-Start-Process -FilePath "$PSScriptRoot\StartSSHKeyForGit.bat"
+# Start SSH Key for Git
+Start-Process -FilePath "StartSSHKeyForGit.bat" -Verb RunAs -Wait
+Read-Host -Prompt "Press any key to continue. . ."
 
 
 foreach ($packageId in $packageIds) {
