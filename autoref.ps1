@@ -80,7 +80,6 @@ $Backup = PromptChoice -Title "Set up backup task schedule" -Prompt "Do you want
 $Update = PromptChoice -Title "Windows Update" -Prompt "Do you want to install Windows Update?" -Choices @("Yes", "No")
 $Office = PromptChoice -Title "Office Installation" -Prompt "Do you want to install and activate Office?" -Choices @("Yes", "No")
 $VM = PromptChoice -Title "VM Platform" -Prompt "Do you want want to install a VM platform?" -Choices @("Yes", "No")
-
 if ($VM -eq 0) {
     $vmPlatform = PromptChoice -Title "VM Platform" -Prompt "Which VM platform do you want to install?" -Choices @("Hyper-V", "VMware") -DefaultChoice 1
 }
@@ -261,12 +260,10 @@ if ($envMachinePath -split ';' -notcontains $installDir){
 Remove-Item -Path $PSScriptRoot\op.zip
 
 winget install Git.Git -e --accept-package-agreements --accept-source-agreements
-Write-Output 'Enable CLI integration under the developer settings and make sure the CLI integration has access to 1password vault make sure 1password is runig use the command "op vault list". And Run SshKeyForGit.ps1'
+Write-Output 'Enable CLI integration under the developer settings and make sure the CLI integration has access to 1password vault make sure 1password is runig use the command "op vault list".'
 Read-Host -Prompt "Press any key to continue. . ."
 
-# Start-Process powershell.exe -ArgumentList "-ExecutionPolicy Bypass -File $PSScriptRoot\SshKeyForGit.ps1" #did not find the op/git comnat
-
-& '.\Start SshKeyForGit.bat'
+cmd.exe /c 'StartSSHKeyForGit.bat'
 
 foreach ($packageId in $packageIds) {
     winget install --id=$packageId -e --accept-package-agreements --accept-source-agreements
