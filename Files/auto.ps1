@@ -350,7 +350,7 @@ if (-not (Test-Path $Config.wtSettings)) {
     New-Item $Config.wtSettings -ItemType Directory -Force
 }
 #replays file 
-Move-Item $PSScriptRoot\settings.json "$Config.wtSettings\settings.json" -Force
+Move-Item $PSScriptRoot\settings.json "$Config.wtSettings\settings.json" -Force #donnot work
 
 # Remove installers
 Remove-Item $Config.nugetPath
