@@ -129,11 +129,11 @@ Remove-Item -Path "HKLM:\Software\Microsoft\Windows\CurrentVersion\RunOnce\*" -R
 if ($Update -eq 0) {
     # Get the available updates.
     Write-Host "Get the available Windows Update"
-    Get-WindowsUpdate | Out-File $Config.LogPath\"$(get-date -f yyyy-MM-dd)_Get-WindowsUpdate.log" -force
+    Get-WindowsUpdate | Out-File $Config.LogPath"$(get-date -f yyyy-MM-dd)_Get-WindowsUpdate.log" -force
 
     # Install all the updates.
     Write-Host "Install all the updates"
-    Install-WindowsUpdate -AcceptAll -Install -IgnoreReboot | Out-File $Config.LogPath\"$(get-date -f yyyy-MM-dd)_Install-WindowsUpdate.log" -force
+    Install-WindowsUpdate -AcceptAll -Install -IgnoreReboot | Out-File $Config.LogPath"$(get-date -f yyyy-MM-dd)_Install-WindowsUpdate.log" -force
 }
 
 # Check if OneDrive is installed
