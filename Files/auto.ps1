@@ -3,6 +3,11 @@ $LogPath = Join-Path $PSScriptRoot "powershell.log"
 if (-not (Test-Path $LogPath)) { New-Item -Path $LogPath -ItemType File -Force }
 Start-Transcript -Path $LogPath -Append -IncludeInvocationHeader
 
+$ParentRootPath = Split-Path (Split-Path $PSScriptRoot -Parent) -Parent # This one will give parent parent path
+$RootPath = Split-Path $PSScriptRoot -Parent # This one will give parent path
+write-host $RootPath
+write-host $ParentRootPath
+read-host "Press enter to continue"
 $Config = @{
     OfficeUrl = "https://c2rsetup.officeapps.live.com/c2r/download.aspx?ProductreleaseID=O365ProPlusRetail&platform=x64&language=en-us&version=O16GA"
     NugetUrl = "https://dist.nuget.org/win-x86-commandline/latest/nuget.exe"
@@ -293,7 +298,9 @@ Write-Host "Hyper-V installation complete."
 }
 } else {
     Start-BitsTransfer -Source $Config.VMwareUrl -Destination $PSScriptRoot\VMware.exe
-    Start-Process -FilePath $PSScriptRoot\VMware.exe -ArgumentList "/s /v/qn AUTOSOFTWAREUPDATE=0 DATACOLLECTION=0 ADDLOCAL=ALL REBOOT=ReallySuppress" -Wait
+    Write-Output 'Start VMware installation.'
+    Read-Host -Prompt "Press any key to continue. . ."
+    #Start-Process -FilePath $PSScriptRoot\VMware.exe -ArgumentList "/s /v/qn AUTOSOFTWAREUPDATE=0 DATACOLLECTION=0 ADDLOCAL=ALL REBOOT=ReallySuppress" -Wait
 }
 
 # Run a Chris Titus Tech's Windows Utility as admin
