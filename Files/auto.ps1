@@ -13,8 +13,7 @@ $Config = @{
     
 }
 $Config.LogPath = Join-Path $Config.RootPath "logs"
-write-host $Config.LogPath
-Read-Host -Prompt "Press any key to continue. . ."
+
 # Ensure logging directory exists and start logging PowerShell commands
 $TranscriptPath = Join-Path $Config.LogPath "Script_Transcript.log"
 if (-not (Test-Path $TranscriptPath)) { New-Item -Path $TranscriptPath -ItemType File -Force }
