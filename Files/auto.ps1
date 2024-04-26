@@ -1,13 +1,3 @@
-# Ensure logging directory exists and start logging PowerShell commands
-$LogPath = Join-Path $PSScriptRoot "powershell.log"
-if (-not (Test-Path $LogPath)) { New-Item -Path $LogPath -ItemType File -Force }
-Start-Transcript -Path $LogPath -Append -IncludeInvocationHeader
-
-$ParentRootPath = Split-Path (Split-Path $PSScriptRoot -Parent) -Parent # This one will give parent parent path
-$RootPath = Split-Path $PSScriptRoot -Parent # This one will give parent path
-write-host $RootPath
-write-host $ParentRootPath
-read-host "Press enter to continue"
 $Config = @{
     OfficeUrl = "https://c2rsetup.officeapps.live.com/c2r/download.aspx?ProductreleaseID=O365ProPlusRetail&platform=x64&language=en-us&version=O16GA"
     NugetUrl = "https://dist.nuget.org/win-x86-commandline/latest/nuget.exe"
@@ -19,7 +9,16 @@ $Config = @{
     OnePasswordUrl = "https://downloads.1password.com/win/1PasswordSetup-latest.exe"
     WingetApiUrl = "https://api.github.com/repos/microsoft/winget-cli/releases/latest"
     VMwareUrl = "https://www.vmware.com/go/getplayer-win" 
+    RootPath = Split-Path $PSScriptRoot -Parent
+    LogPath = $Config.RootPath + "\log"
 }
+
+# Ensure logging directory exists and start logging PowerShell commands
+$TranscriptPath = Join-Path $Config.LogPath "Script_Transcript.log"
+if (-not (Test-Path $TranscriptPath)) { New-Item -Path $TranscriptPath -ItemType File -Force }
+Start-Transcript -Path $TranscriptPath -Append -IncludeInvocationHeader
+
+
 # Define the list of apps to uninstall
 $appList = @(
     "Microsoft.BingNews",
@@ -129,11 +128,11 @@ Remove-Item -Path "HKLM:\Software\Microsoft\Windows\CurrentVersion\RunOnce\*" -R
 if ($Update -eq 0) {
     # Get the available updates.
     Write-Host "Get the available Windows Update"
-    Get-WindowsUpdate | Out-File "$PSScriptRoot\$(get-date -f yyyy-MM-dd)_Get-WindowsUpdate.log" -force
+    Get-WindowsUpdate | Out-File "$Config.LogPath\$(get-date -f yyyy-MM-dd)_Get-WindowsUpdate.log" -force
 
     # Install all the updates.
     Write-Host "Install all the updates"
-    Install-WindowsUpdate -AcceptAll -Install -IgnoreReboot | Out-File "$PSScriptRoot\$(get-date -f yyyy-MM-dd)_Install-WindowsUpdate.log" -force
+    Install-WindowsUpdate -AcceptAll -Install -IgnoreReboot | Out-File "$Config.LogPath\$(get-date -f yyyy-MM-dd)_Install-WindowsUpdate.log" -force
 }
 
 # Check if OneDrive is installed
@@ -297,7 +296,7 @@ Enable-WindowsOptionalFeature -Online -FeatureName Microsoft-Hyper-V -All -NoRes
 Write-Host "Hyper-V installation complete."
 }
 } else {
-    Start-BitsTransfer -Source $Config.VMwareUrl -Destination $PSScriptRoot\VMware.exe
+    Start-BitsTransfer -Source $Config.VMwareUrl -Destination $Config.RootPath\VMware.exe
     Write-Output 'Start VMware installation.'
     Read-Host -Prompt "Press any key to continue. . ."
     #Start-Process -FilePath $PSScriptRoot\VMware.exe -ArgumentList "/s /v/qn AUTOSOFTWAREUPDATE=0 DATACOLLECTION=0 ADDLOCAL=ALL REBOOT=ReallySuppress" -Wait
