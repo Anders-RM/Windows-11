@@ -10,9 +10,9 @@ $Config = @{
     WingetApiUrl = "https://api.github.com/repos/microsoft/winget-cli/releases/latest"
     VMwareUrl = "https://www.vmware.com/go/getplayer-win" 
     RootPath = Split-Path $PSScriptRoot -Parent
-    LogPath = Join-Path $Config.RootPath "logs"
+    
 }
-
+$Config.LogPath = Join-Path $Config.RootPath "logs"
 write-host $Config.LogPath
 Read-Host -Prompt "Press any key to continue. . ."
 # Ensure logging directory exists and start logging PowerShell commands
