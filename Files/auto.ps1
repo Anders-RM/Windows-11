@@ -10,8 +10,7 @@ $Config = @{
     WingetApiUrl = "https://api.github.com/repos/microsoft/winget-cli/releases/latest"
     VMwareUrl = "https://www.vmware.com/go/getplayer-win" 
     RootPath = Split-Path $PSScriptRoot -Parent
-    LogPath = $Config.RootPath + "\logs"
-    
+    LogPath = Join-Path $Config.RootPath "logs"
 }
 
 write-host $Config.LogPath
