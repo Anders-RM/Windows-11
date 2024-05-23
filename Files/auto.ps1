@@ -8,7 +8,6 @@ $Config = @{
     WtSettings = Join-Path $HOME "AppData\Local\Packages\Microsoft.WindowsTerminal_8wekyb3d8bbwe\LocalState"
     OnePasswordUrl = "https://downloads.1password.com/win/1PasswordSetup-latest.exe"
     WingetApiUrl = "https://api.github.com/repos/microsoft/winget-cli/releases/latest"
-    VMwareUrl = "https://www.vmware.com/go/getplayer-win" 
     RootPath = Split-Path $PSScriptRoot -Parent
     
 }
@@ -129,11 +128,11 @@ Remove-Item -Path "HKLM:\Software\Microsoft\Windows\CurrentVersion\RunOnce\*" -R
 if ($Update -eq 0) {
     # Get the available updates.
     Write-Host "Get the available Windows Update"
-    Get-WindowsUpdate | Out-File $Config.LogPath"$(get-date -f yyyy-MM-dd)_Get-WindowsUpdate.log" -force
+    Get-WindowsUpdate
 
     # Install all the updates.
     Write-Host "Install all the updates"
-    Install-WindowsUpdate -AcceptAll -Install -IgnoreReboot | Out-File $Config.LogPath"$(get-date -f yyyy-MM-dd)_Install-WindowsUpdate.log" -force
+    Install-WindowsUpdate -AcceptAll -Install -IgnoreReboot
 }
 
 # Check if OneDrive is installed
@@ -297,14 +296,11 @@ Enable-WindowsOptionalFeature -Online -FeatureName Microsoft-Hyper-V -All -NoRes
 Write-Host "Hyper-V installation complete."
 }
 } else {
-    Start-BitsTransfer -Source $Config.VMwareUrl -Destination $Config.RootPath\VMware.exe
+    Read-Host -Prompt "Downlowd VMware https://www.vmware.com/products/desktop-hypervisor.html OR https://support.broadcom.com/group/ecx/productdownloads?subfamily=VMware%20Workstation%20Pro and name the file VMware.exe and put it in the fils folder"
     Write-Output 'Start VMware installation.'
-    Read-Host -Prompt "Press any key to continue. . ."
-    #Start-Process -FilePath $PSScriptRoot\VMware.exe -ArgumentList "/s /v/qn AUTOSOFTWAREUPDATE=0 DATACOLLECTION=0 ADDLOCAL=ALL REBOOT=ReallySuppress" -Wait
+    
+    Start-Process -FilePath $PSScriptRoot\VMware.exe -ArgumentList "/s /v/qn AUTOSOFTWAREUPDATE=0 DATACOLLECTION=0 ADDLOCAL=ALL REBOOT=ReallySuppress" -Wait
 }
-
-# Run a Chris Titus Tech's Windows Utility as admin
-Start-Process powershell -Verb runAs -ArgumentList 'iwr -useb https://christitus.com/win | iex' -Wait
 
 # Customize Windows settings
 Set-ItemProperty -Path "HKCU:\SOFTWARE\Microsoft\Windows\CurrentVersion\Themes\Personalize" -Name "AppsUseLightTheme" -Value 0 -Force
@@ -318,7 +314,10 @@ Set-ItemProperty -Path "HKCU:\SOFTWARE\Microsoft\Windows\CurrentVersion\Explorer
 Set-ItemProperty -Path "HKCU:\Software\Microsoft\Clipboard" -Name "EnableClipboardHistory" -Value 1 -Force
 Set-ItemProperty -Path "HKCU:\Control Panel\Accessibility\StickyKeys" -Name "Flags" -Value 506 -Force
 New-ItemProperty -Path "HKLM:\SYSTEM\CurrentControlSet\Control\FileSystem" -Name "LongPathsEnabled" -Value 1 -PropertyType DWORD -Force
-#New-ItemProperty -Path "HKCU:\SOFTWARE\Microsoft\Windows\CurrentVersion\Explorer" -Name "EnableAutoTray" -Value 1 -PropertyType DWORD -Force
+New-ItemProperty -Path "HKCU:\SOFTWARE\Microsoft\Windows\CurrentVersion\Explorer" -Name "EnableAutoTray" -Value 1 -PropertyType DWORD -Force
+
+# Run a Chris Titus Tech's Windows Utility as admin
+Start-Process powershell -Verb runAs -ArgumentList 'iwr -useb https://christitus.com/win | iex' -Wait
 
 # Set the power button behavior to do nothing
 powercfg -SETACVALUEINDEX SCHEME_CURRENT SUB_BUTTONS PBUTTONACTION 0
