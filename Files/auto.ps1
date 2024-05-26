@@ -369,9 +369,9 @@ if ($Backup -eq 0) {
 
     Move-Item $PSScriptRoot\BackupScript.ps1 C:\BackupScript.ps1
     # Schedule BackupScript.ps1 to run ons a week
-    $Action = New-ScheduledTaskAction -Execute "PowerShell.exe" -Argument "-ExecutionPolicy Bypass -File C:\BackupScript.ps1"
+    $Action = New-ScheduledTaskAction -Execute "PowerShell.exe" -Argument "-nologo -windowstyle Hidden -ExecutionPolicy Bypass -File C:\BackupScript.ps1"
     $trigger = New-ScheduledTaskTrigger -Weekly -DaysOfWeek Sunday -At "20:00" 
-    Register-ScheduledTask -Action $action -Trigger $trigger -TaskName "Backup Proton - NAS" -Description "Backup proton drive to NAS"
+    Register-ScheduledTask -Action $action -Trigger $trigger -TaskName "Backup Proton - NAS" -Description "Backup proton drive to NAS" -Settings (New-ScheduledTaskSettingsSet -Hidden $true)
 }
 # Set the installation policy for the PSGallery repository
 Set-PSRepository -Name PSGallery -InstallationPolicy Untrusted
