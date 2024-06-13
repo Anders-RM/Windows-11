@@ -246,7 +246,7 @@ Start-Process "ms-settings:accounts"
 Read-Host -Prompt "Press any key to continue. . ."
 Get-Process 1Password | Stop-Process
 
-# 1Password CLI
+# 1Password CLI is in winget
 $arch = (Get-CimInstance Win32_OperatingSystem).OSArchitecture
 switch ($arch) {
     '64-bit' { $opArch = 'amd64'; break }
