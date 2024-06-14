@@ -246,7 +246,7 @@ Start-Process "ms-settings:accounts"
 Read-Host -Prompt "Press any key to continue. . ."
 Get-Process 1Password | Stop-Process
 
-# 1Password CLI
+# 1Password CLI winget
 $arch = (Get-CimInstance Win32_OperatingSystem).OSArchitecture
 switch ($arch) {
     '64-bit' { $opArch = 'amd64'; break }
@@ -284,23 +284,27 @@ Remove-Item $PSScriptRoot\office.exe
 # Run Microsoft Activation Scripts as admin 
 Start-Process powershell -Verb runAs -ArgumentList 'irm https://massgrave.dev/get | iex' -Wait
 }
-## net to add VMware or Hyper-V or non
-if ($vmPlatform -eq 0) {
-    # Check if Hyper-V is installed
-$HyperVInstalled = Get-WindowsOptionalFeature -FeatureName Microsoft-Hyper-V -Online | Select-Object -ExpandProperty State
+f ($VM -eq 1) {
 
-# If Hyper-V is not installed, install it
-if ($HyperVInstalled -ne 'Enabled') {
-Write-Host "Hyper-V is not installed. Installing..."
-Enable-WindowsOptionalFeature -Online -FeatureName Microsoft-Hyper-V -All -NoRestart
-Write-Host "Hyper-V installation complete."
-}
-} else {
-    Read-Host -Prompt "Downlowd VMware https://www.vmware.com/products/desktop-hypervisor.html OR https://support.broadcom.com/group/ecx/productdownloads?subfamily=VMware%20Workstation%20Pro and name the file VMware.exe and put it in the fils folder"
-    Write-Output 'Start VMware installation.'
+    ## net to add VMware or Hyper-V or non
+    if ($vmPlatform -eq 0 ) {
+        # Check if Hyper-V is installed
+    $HyperVInstalled = Get-WindowsOptionalFeature -FeatureName Microsoft-Hyper-V -Online | Select-Object -ExpandProperty State
     
-    Start-Process -FilePath $PSScriptRoot\VMware.exe -ArgumentList "/s /v/qn AUTOSOFTWAREUPDATE=0 DATACOLLECTION=0 ADDLOCAL=ALL REBOOT=ReallySuppress" -Wait
+    # If Hyper-V is not installed, install it
+    if ($HyperVInstalled -ne 'Enabled') {
+    Write-Host "Hyper-V is not installed. Installing..."
+    Enable-WindowsOptionalFeature -Online -FeatureName Microsoft-Hyper-V -All -NoRestart
+    Write-Host "Hyper-V installation complete."
+    }
+    } else {
+        Read-Host -Prompt "Downlowd VMware https://www.vmware.com/products/desktop-hypervisor.html OR https://support.broadcom.com/group/ecx/productdownloads?subfamily=VMware%20Workstation%20Pro and name the file VMware.exe and put it in the fils folder"
+        Write-Output 'Start VMware installation.'
+        
+        Start-Process -FilePath $PSScriptRoot\VMware.exe -ArgumentList "/s /v/qn AUTOSOFTWAREUPDATE=0 DATACOLLECTION=0 ADDLOCAL=ALL REBOOT=ReallySuppress" -Wait
+    }
 }
+    
 
 # Customize Windows settings
 Set-ItemProperty -Path "HKCU:\SOFTWARE\Microsoft\Windows\CurrentVersion\Themes\Personalize" -Name "AppsUseLightTheme" -Value 0 -Force
