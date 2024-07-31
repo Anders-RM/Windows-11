@@ -54,6 +54,7 @@ $packageIds = @(
     "M2Team.NanaZip",
     "Microsoft.WindowsTerminal",
     "Brave.Brave"
+    "Microsoft.PowerToys"
 )
 
 # Set the region to English Denmark

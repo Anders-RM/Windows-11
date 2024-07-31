@@ -1,11 +1,11 @@
 Start-Transcript -Path $PSScriptRoot"\SSH.log" -Append -IncludeInvocationHeader
 # Get current date and format it as a string
-$date = Get-Date -Format "yyyyMMdd"
+#$date = Get-Date -Format "yyyyMMdd"
 
 # add date to key --title
-op ssh generate --title "$env:computername-$date"
-$sshKey = op item get "$env:computername-$date" --fields "label=public key"
-$modifiedsshKey = $sshKey.Replace("`r`n", "").Replace("""", "")
+#op ssh generate --title "$env:computername-$date"
+#$sshKey = op item get "$env:computername-$date" --fields "label=public key"
+#$modifiedsshKey = $sshKey.Replace("`r`n", "").Replace("""", "")
 
 $gitConfigSettings = @{
     'user.signingkey' = $modifiedsshKey
