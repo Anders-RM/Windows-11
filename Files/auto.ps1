@@ -9,6 +9,7 @@ $Config = @{
     OnePasswordUrl = "https://downloads.1password.com/win/1PasswordSetup-latest.exe"
     WingetApiUrl = "https://api.github.com/repos/microsoft/winget-cli/releases/latest"
     RootPath = Split-Path $PSScriptRoot -Parent
+    Cider = "https://cidercollective.itch.io/cider/download/l9Tjy5f32DHjy0s6lhohho_2u9wYLi5rFQ7_t9Bb"
     
 }
 $Config.LogPath = Join-Path $Config.RootPath "logs"
@@ -289,7 +290,11 @@ f ($VM -eq 1) {
         Start-Process -FilePath $PSScriptRoot\VMware.exe -ArgumentList "/s /v/qn AUTOSOFTWAREUPDATE=0 DATACOLLECTION=0 ADDLOCAL=ALL REBOOT=ReallySuppress" -Wait
     }
 }
-    
+
+
+Start-Process $Config.Cider -Wait
+Write-Output 'Install Cider and set up Remote'
+Read-Host -Prompt "Press any key to continue. . ."
 
 # Customize Windows settings
 Set-ItemProperty -Path "HKCU:\SOFTWARE\Microsoft\Windows\CurrentVersion\Themes\Personalize" -Name "AppsUseLightTheme" -Value 0 -Force
