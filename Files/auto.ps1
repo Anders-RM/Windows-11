@@ -53,8 +53,9 @@ $packageIds = @(
     "Microsoft.VisualStudioCode",
     "M2Team.NanaZip",
     "Microsoft.WindowsTerminal",
-    "Brave.Brave"
-    "Microsoft.PowerToys"
+    "Brave.Brave",
+    "Microsoft.PowerToys",
+    "ShareX.ShareX"
 )
 
 # Set the region to English Denmark
@@ -247,25 +248,8 @@ Start-Process "ms-settings:accounts"
 Read-Host -Prompt "Press any key to continue. . ."
 Get-Process 1Password | Stop-Process
 
-# 1Password CLI is in winget
-$arch = (Get-CimInstance Win32_OperatingSystem).OSArchitecture
-switch ($arch) {
-    '64-bit' { $opArch = 'amd64'; break }
-    '32-bit' { $opArch = '386'; break }
-    Default { Write-Error "Sorry, your operating system architecture '$arch' is unsupported" -ErrorAction Stop }
-}
-
-$installDir = Join-Path -Path $env:ProgramFiles -ChildPath '1Password CLI'
-Start-BitsTransfer -Source "https://cache.agilebits.com/dist/1P/op2/pkg/v2.19.0-beta.01/op_windows_$($opArch)_v2.19.0-beta.01.zip" -Destination $PSScriptRoot\op.zip 
-Expand-Archive -Path $PSScriptRoot\op.zip -DestinationPath $installDir -Force
-$envMachinePath = [System.Environment]::GetEnvironmentVariable('PATH','machine')
-if ($envMachinePath -split ';' -notcontains $installDir){
-    [Environment]::SetEnvironmentVariable('PATH', "$envMachinePath;$installDir", 'Machine')
-}
-Remove-Item -Path $PSScriptRoot\op.zip
-
 winget install Git.Git -e --accept-package-agreements --accept-source-agreements
-Write-Output 'Enable CLI integration under the developer settings and Run StartSSHKeyForGit.bat.'
+Write-Output 'Run StartSSHKeyForGit.bat.'
 Read-Host -Prompt "Press any key to continue. . ."
 
 foreach ($packageId in $packageIds) {
