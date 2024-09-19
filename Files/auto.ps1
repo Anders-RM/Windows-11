@@ -55,7 +55,6 @@ $packageIds = @(
     "M2Team.NanaZip",
     "Microsoft.WindowsTerminal",
     "Brave.Brave",
-    "Microsoft.PowerToys",
     "ShareX.ShareX"
 )
 
@@ -293,7 +292,7 @@ f ($VM -eq 1) {
 
 
 Start-Process $Config.Cider -Wait
-Write-Output 'Install Cider and set up Remote'
+Write-Output 'Install Cider and set up Remote and last.fm'
 Read-Host -Prompt "Press any key to continue. . ."
 
 # Customize Windows settings
