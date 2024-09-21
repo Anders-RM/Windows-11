@@ -366,6 +366,8 @@ if ($Backup -eq 0) {
     $trigger = New-ScheduledTaskTrigger -Weekly -DaysOfWeek Sunday -At "20:00" 
     Register-ScheduledTask -Action $action -Trigger $trigger -TaskName "Backup Proton - NAS" -Description "Backup proton drive to NAS" -Settings (New-ScheduledTaskSettingsSet -Hidden $true)
 }
+wmic RECOVEROS set DebugInfoType = 1
+wmic RECOVEROS get DebugInfoType
 # Set the installation policy for the PSGallery repository
 Set-PSRepository -Name PSGallery -InstallationPolicy Untrusted
 winget upgrade --all
