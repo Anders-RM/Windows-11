@@ -19,6 +19,17 @@ $TranscriptPath = Join-Path $Config.LogPath "Script_Transcript.log"
 if (-not (Test-Path $TranscriptPath)) { New-Item -Path $TranscriptPath -ItemType File -Force }
 Start-Transcript -Path $TranscriptPath -Append -IncludeInvocationHeader
 
+# Disable Windows Defender
+$defenderKeyPath = "HKLM:\SOFTWARE\Policies\Microsoft\Windows Defender"
+$originalDisableAntiSpyware = Get-ItemProperty -Path $defenderKeyPath -Name "DisableAntiSpyware" -ErrorAction SilentlyContinue
+$originalRealtimeMonitoring = (Get-MpPreference).DisableRealtimeMonitoring
+
+Write-Host "Disabling Windows Defender..."
+Set-MpPreference -DisableRealtimeMonitoring $true -ErrorAction SilentlyContinue
+if (-not (Test-Path $defenderKeyPath)) {
+    New-Item -Path $defenderKeyPath -Force | Out-Null
+}
+Set-ItemProperty -Path $defenderKeyPath -Name "DisableAntiSpyware" -Value 1 -Type DWORD -Force
 
 # Define the list of apps to uninstall
 $appList = @(
@@ -386,6 +397,15 @@ if ($Backup -eq 0) {
 # Set the installation policy for the PSGallery repository
 Set-PSRepository -Name PSGallery -InstallationPolicy Untrusted
 winget upgrade --all
+
+# Re-enable Windows Defender at the end
+Write-Host "Re-enabling Windows Defender..."
+Set-MpPreference -DisableRealtimeMonitoring $originalRealtimeMonitoring -ErrorAction SilentlyContinue
+if ($originalDisableAntiSpyware) {
+    Set-ItemProperty -Path $defenderKeyPath -Name "DisableAntiSpyware" -Value $originalDisableAntiSpyware.DisableAntiSpyware -Type DWORD -Force
+} else {
+    Remove-ItemProperty -Path $defenderKeyPath -Name "DisableAntiSpyware" -ErrorAction SilentlyContinue
+}
 
 # Stop transcript and restart computer
 Stop-Transcript
