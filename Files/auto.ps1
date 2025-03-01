@@ -9,7 +9,7 @@ $Config = @{
     OnePasswordUrl = "https://downloads.1password.com/win/1PasswordSetup-latest.exe"
     WingetApiUrl = "https://api.github.com/repos/microsoft/winget-cli/releases/latest"
     RootPath = Split-Path $PSScriptRoot -Parent
-    talonurl = "https://github.com/ravendevteam/talon/releases/latest/download/talon.exe"
+    talonurl = "https://code.ravendevteam.org/talon/talon.zip"
     
 }
 $Config.LogPath = Join-Path $Config.RootPath "logs"
@@ -91,10 +91,32 @@ function PromptChoice {
     $host.ui.PromptForChoice($Title, $Prompt, $choiceDescriptions, $DefaultChoice)
 }
 
-Start-BitsTransfer -Source $Config.talonurl -Destination $PSScriptRoot\talon.exe
-Start-Process -FilePath $PSScriptRoot\talon.exe --silent -Wait
-Start-Sleep -Seconds 10
-Remove-Item $PSScriptRoot\talon.exe
+# Start the BITS transfer and wait for completion
+try {
+    $bitsJob = Start-BitsTransfer -Source $Config.talonurl -Destination "$PSScriptRoot\talon.zip" -Asynchronous -ErrorAction Stop
+    $bitsJob | Complete-BitsTransfer -ErrorAction Stop
+}
+catch {
+    Write-Error "BITS transfer failed: $_"
+    exit 1
+}
+
+# Expand the downloaded archive
+Expand-Archive -Path "$PSScriptRoot\talon.zip" -DestinationPath "$PSScriptRoot\Talon" -Force
+
+# Start the executable and wait for it to exit
+$process = Start-Process -FilePath "$PSScriptRoot\Talon\talon.exe" -PassThru -Wait
+
+# Remove the executable (if needed)
+if ($process.ExitCode -eq 0) {
+    Remove-Item -Path "$PSScriptRoot\Talon\talon.exe" -Force
+}
+else {
+    Write-Warning "Talon.exe exited with code $($process.ExitCode). File not removed."
+}
+
+# Clean up the zip file (optional)
+Remove-Item -Path "$PSScriptRoot\talon.zip" -Force
 
 # 0 = Yes, 1 = No, Default = 0
 $Backup = PromptChoice -Title "Set up backup task schedule" -Prompt "Do you want to activate backup?" -Choices @("Yes", "No") -DefaultChoice 1
